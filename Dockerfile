@@ -8,4 +8,4 @@ RUN apt-get install -y texlive-full
 
 RUN install2.r --error --deps TRUE bookdown
 
-RUN install2.r --error --deps TRUE tidyverse
+# RUN install2.r --error --deps TRUE tidyverse
