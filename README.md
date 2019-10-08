@@ -1,6 +1,7 @@
 # prediccion-morosidad
-Este repositorio genera un documento en el que se describe un caso real de negocio:
+
+*prediccion-morosidad* genera un documento en el que se presenta un caso real de negocio:
 
 * negocio - institución otorgadora de crédito
-* problema de negocio - accionar estrategias preventivas de cobranza
-* solución presentada - predicción de impuntualidad e incumplimiento de pago 
+* problema de negocio - altos costos del área de cobranza
+* solución explorada - contar con predicciones de impuntualidad de pago que permitan accionar medidas preventivas y evitar incumplimientos
