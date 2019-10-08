@@ -6,7 +6,7 @@
 * problema de negocio - altos costos del área de cobranza
 * solución explorada - contar con predicciones de impuntualidad de pago que permitan accionar medidas preventivas y evitar incumplimientos
 
-En el documento se describen los pasos que el negocio siguió para desarrollar el producto de datos que genera las predicciones.
+En el documento se describen cómo se creo el producto de datos que genera las predicciones.
 
 ## Cómo ver el documento
 
