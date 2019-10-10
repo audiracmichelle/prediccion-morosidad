@@ -1,12 +1,12 @@
 # prediccion-morosidad
 
-*prediccion-morosidad* genera un documento en el que se presenta un caso real de negocio:
+*prediccion-morosidad* genera un documento en el que se presenta un estudio de caso:
 
 * negocio - institución otorgadora de crédito
 * problema de negocio - altos costos del área de cobranza
 * solución explorada - contar con predicciones de impuntualidad de pago que permitan accionar medidas preventivas y evitar incumplimientos
 
-En el documento se describen cómo se creo el producto de datos que genera las predicciones.
+En el estudio de caso se describe cómo se creo el producto de datos que genera las predicciones.
 
 ## Cómo ver el documento
 
