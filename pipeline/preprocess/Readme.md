@@ -28,5 +28,6 @@ Aquí está la descripción de los parámetros:
 * <tag_sources> los archivos generados por prediccion_morosidad_sources usan esta etiqueta como suffix
 * <ymd_preprocess> ultima fecha de corte en matriz de diseño. Los archivos generados por prediccion_morosidad_preprocess usan esta etiqueta como suffix 
 * <tag_preprocess> los archivos generados por prediccion_morosidad_preprocess usan esta etiqueta como suffix
+* <bucket_s3> nombre del bucket de lectura y escritura, este es un parámetro opcional
 
 La fecha de corte de sources <ymd_sources> puede ser posterior a la fecha de corte de preprocesamiento <ymd_preprocess>.
