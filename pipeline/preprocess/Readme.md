@@ -2,7 +2,7 @@
 
 Este contenedor corre la tarea de preprocesamiento y limpieza de datos.
 
-Para construir la imagen `prediccion_morosidad_preprocess` hay que usar
+Para construir la imagen `prediccion_morosidad_preprocess`, hay que usar
 
 ```sh
 $ docker build -t prediccion_morosidad_preprocess . 
@@ -10,16 +10,16 @@ $ docker build -t prediccion_morosidad_preprocess .
 
 Aunque de forma predeterminada la tarea de este contenedor utiliza ubicaciones locales dentro de `pipeline/`, también es posible especificar un bucket de s3 de lectura y escritura de datos.
 
-Si se quieren utilizar las ubicaciones locales del pipeline, hay que usar
+Si se quieren utilizar las ubicaciones locales del pipeline, desde la carpeta `pipeline/` hay que usar
 
 ```sh
-$ docker run -it --rm  prediccion_morosidad_preprocess <ymd_sources> <tag_sources> <ymd_preprocess> <tag_preprocess>
+$ docker run -it --rm  -v $(pwd)/sources/output:/home/sources/output -v $(pwd)/preprocess/output:/home/preprocess/output prediccion_morosidad_preprocess <ymd_sources> <tag_sources> <ymd_preprocess> <tag_preprocess> "local"
 ```
 
 Para utilizar un bucket de s3 de lectura y escritura de datos, hay que correr el contenedor con la siguiente línea
 
 ```sh
-$ docker run -it --rm  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION  prediccion_morosidad_preprocess <ymd_sources> <tag_sources> <ymd_preprocess> <tag_preprocess><bucket_s3>
+$ docker run -it --rm  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION  prediccion_morosidad_preprocess <ymd_sources> <tag_sources> <ymd_preprocess> <tag_preprocess> <bucket_s3>
 ```
 
 Aquí está la descripción de los parámetros:
