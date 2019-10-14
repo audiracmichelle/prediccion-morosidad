@@ -2,7 +2,7 @@
 
 Este contenedor corre la tarea de preprocesamiento y limpieza de datos.
 
-Para construir la imagen `prediccion_morosidad_preprocess' hay que usar
+Para construir la imagen `prediccion_morosidad_preprocess` hay que usar
 
 ```sh
 $ docker build -t prediccion_morosidad_preprocess . 
