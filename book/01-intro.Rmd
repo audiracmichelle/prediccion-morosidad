@@ -1,6 +1,11 @@
-# Introduction {#intro}
+# Introducción {#intro}
 
-You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods).
+
+identificar anticipadamente un posible evento de impago o Mora.
+
+A inicios del 2018 se presentó el nuevo Modelo de gestión de cobranza en el cual se le dá más trascendencia a las herramientas de rescate, y su objetivo es el minimizar en gran medida la morosidad que llegan a presentar las Distribuidoras, ya que repercute directamente en la calidad de la cartera.
+
+<!-- You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods).
 
 Figures and tables with captions will be placed in `figure` and `table` environments, respectively.
 
@@ -18,4 +23,4 @@ knitr::kable(
 )
 ```
 
-You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015].
+You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015]. -->
