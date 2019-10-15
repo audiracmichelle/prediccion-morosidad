@@ -126,32 +126,32 @@ print(params$bucket_s3)
 
 system("echo '===== Fetching data ====='")
 
-if(params$bucket_s3 == "") {
+if(params$bucket_s3 == "local") {
   # ####
   # # usar estas líneas si se quieren leer los archivos directamente de la carpeta local
-  calendario <- read_feather(paste0('../sources/output/calendario_',
+  calendario <- read_feather(paste0('/home/sources/output/calendario_',
                                     params$ymd_sources, '_', 
                                     params$tag_sources, '.feather'))
-  cobranza <- read_feather(paste0('../sources/output/cobranza_',
+  cobranza <- read_feather(paste0('/home/sources/output/cobranza_',
                                   params$ymd_sources, '_', 
                                   params$tag_sources, '.feather'))
-  movimientos <- read_feather(paste0('../sources/output/movimientos_',
+  movimientos <- read_feather(paste0('/home/sources/output/movimientos_',
                                     params$ymd_sources, '_', 
                                     params$tag_sources, '.feather'))
-  activas <- read_feather(paste0('../sources/output/activas_', 
+  activas <- read_feather(paste0('/home/sources/output/activas_', 
                                 params$ymd_sources, '_', 
                                 params$tag_sources, '.feather'))
-  bajas <- read_feather(paste0('../sources/output/bajas_', 
+  bajas <- read_feather(paste0('/home/sources/output/bajas_', 
                               params$ymd_sources, '_', 
                               params$tag_sources, '.feather'))
-  convenios <- read_feather(paste0('../sources/output/convenios_',
+  convenios <- read_feather(paste0('/home/sources/output/convenios_',
                                   params$ymd_sources, '_',
                                   params$tag_sources, '.feather'))
 
-  # clientes_comfu <- read_feather(paste0('../sources/output/clientes_comfu_',
+  # clientes_comfu <- read_feather(paste0('/home/sources/output/clientes_comfu_',
   #                                       params$ymd_sources, '_', 
   #                                       params$tag_sources, '.feather'))
-  # voucher_companies <- read_feather(paste0('../sources/output/voucher_companies_',
+  # voucher_companies <- read_feather(paste0('/home/sources/output/voucher_companies_',
   #                                          params$ymd_sources, '_', 
   #                                          params$tag_sources, '.feather'))
 
@@ -771,13 +771,13 @@ limpieza$convenio[is.na(limpieza$convenio)] <- 0
 
 system("echo '===== Saving processed data ====='")
 
-if(params$bucket_s3 == "") {
+if(params$bucket_s3 == "local") {
   ####
   # usar estas lineas si se quiere escribir el resultado directamente en la carpeta local
-  write_feather(limpieza, paste0('./output/limpieza_',
+  write_feather(limpieza, paste0('/home/preprocess/output/limpieza_',
                                 params$ymd_preprocess, '_', 
                                 params$tag_preprocess, '.feather'))
-  write_feather(design_matrix, paste0('./output/design_matrix_',
+  write_feather(design_matrix, paste0('/home/preprocess/design_matrix_',
                                       params$ymd_preprocess, '_', 
                                       params$tag_preprocess, '.feather'))
   ####
