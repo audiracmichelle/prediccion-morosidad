@@ -28,5 +28,5 @@ Aquí está la descripción de los parámetros:
 <ymd_preprocess> los archivos generados por prediccion_morosidad_preprocess usan esta fecha como suffix. También los archivos generados por prediccion_morosidad_wrangle_train usan esta fecha como suffix 
 <tag_preprocess> los archivos generados por prediccion_morosidad_preprocess usan esta etiqueta como suffix
 <tag_wrangle_train> los archivos generados por prediccion_morosidad_wrangle_train usan esta etiqueta como suffix
-<halflife> halflife para estadísticas móviles
-<min_len_predictors> mínima longitud de series de tiempo
+<halflife> halflife para estadísticas móviles. Se sugiere usar 6
+<min_len_predictors> mínima longitud de series de tiempo. Se sugiere usar 6

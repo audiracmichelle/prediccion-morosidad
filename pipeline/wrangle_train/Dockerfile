@@ -14,6 +14,6 @@ RUN install2.r --error --deps TRUE feather
 RUN install2.r --error --deps TRUE xts
 RUN install2.r --error --deps TRUE aws.s3
 
-ADD collapse_train.R .
+ADD wrangle_train.R .
 
-ENTRYPOINT ["Rscript", "/app/collapse_train.R"]
+ENTRYPOINT ["Rscript", "/app/wrangle_train.R"]

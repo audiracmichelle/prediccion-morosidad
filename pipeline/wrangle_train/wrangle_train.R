@@ -69,7 +69,7 @@ params <- list()
 
 # ####
 # # usar estos parámetros si se requieren leer los parametros directamente
-# params$ymd_preprocess <- 20180907
+# params$ymd_preprocess <- 20180823
 # params$tag_preprocess <- 'prod'
 # params$tag_collapse <- 'prod'
 # params$halflife <- 6
@@ -83,7 +83,7 @@ params$tag_preprocess <- args[2]
 params$tag_collapse <- args[3]
 params$halflife <- as.numeric(args[4])
 params$min_len_predictors <- as.numeric(args[5])
-params$bucket_s3 <- as.numeric(args[6])
+params$bucket_s3 <- args[6]
 
 params$ventana_predict <- 3
 params$num_lco_strikes <- 3
@@ -92,10 +92,10 @@ params$max_fechas_faltantes_seguidas <- 2
 system("echo '===== Fetching data ====='")
 
 if(params$bucket_s3 == "local") {
-  limpieza <- read_feather(paste0('home/preprocess/output/limpieza_',
+  limpieza <- read_feather(paste0('/home/preprocess/output/limpieza_',
                                   params$ymd_preprocess, '_', 
                                   params$tag_preprocess, '.feather'))
-  creditos <- read_feather(paste0('home/preprocess/output/design_matrix_',
+  creditos <- read_feather(paste0('/home/preprocess/output/design_matrix_',
                                   params$ymd_preprocess, '_', 
                                   params$tag_preprocess, '.feather'))
 } else {
