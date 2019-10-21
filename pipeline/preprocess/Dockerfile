@@ -1,4 +1,4 @@
-FROM r-base:3.5.0
+FROM rocker/tidyverse:3.5.0
 
 WORKDIR /app
 
@@ -10,16 +10,13 @@ RUN apt-get update \
       libxml2-dev
 
 # R dependencies
-RUN install2.r --error --deps TRUE tidyverse
 RUN install2.r --error --deps TRUE lubridate
 RUN install2.r --error --deps TRUE feather
-RUN install2.r --error --deps TRUE magrittr
-RUN install2.r --error --deps TRUE Rcpp
 RUN install2.r --error --deps TRUE data.table
 RUN install2.r --error --deps TRUE aws.s3
 
-ADD preprocess.R .
 ADD buscar_indice_primer_positivo.cpp .
 ADD buscar_indice_ultimo_positivo.cpp .
+ADD preprocess.R .
 
 ENTRYPOINT ["Rscript", "/app/preprocess.R"]
