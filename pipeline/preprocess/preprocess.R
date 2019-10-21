@@ -153,43 +153,43 @@ if(params$bucket_s3 == "local") {
   # #                                          params$tag_sources, '.feather'))
 } else {
   calendario <- s3read_using(FUN = read_feather,
-                            bucket = 'datank-concredito',
-                            object = paste0('/data/sources/output/calendario_',
+                            bucket = params$bucket_s3,
+                            object = paste0('calendario_',
                                             params$ymd_sources, '_',
                                             params$tag_sources, '.feather'))
   cobranza <- s3read_using(FUN = read_feather,
-                          bucket = 'datank-concredito',
-                          object = paste0('/data/sources/output/cobranza_',
+                          bucket = params$bucket_s3,
+                          object = paste0('cobranza_',
                                           params$ymd_sources, '_',
                                           params$tag_sources, '.feather'))
   movimientos <- s3read_using(FUN = read_feather,
-                              bucket = 'datank-concredito',
-                              object = paste0('/data/sources/output/movimientos_',
+                              bucket = params$bucket_s3,
+                              object = paste0('movimientos_',
                                               params$ymd_sources, '_',
                                               params$tag_sources, '.feather'))
   activas <- s3read_using(FUN = read_feather,
-                              bucket = 'datank-concredito',
-                              object = paste0('/data/sources/output/activas_',
+                              bucket = params$bucket_s3,
+                              object = paste0('activas_',
                                               params$ymd_sources, '_',
                                               params$tag_sources, '.feather'))
   bajas <- s3read_using(FUN = read_feather,
-                              bucket = 'datank-concredito',
-                              object = paste0('/data/sources/output/bajas_',
+                              bucket = params$bucket_s3,
+                              object = paste0('bajas_',
                                               params$ymd_sources, '_',
                                               params$tag_sources, '.feather'))
   convenios <- s3read_using(FUN = read_feather,
-                              bucket = 'datank-concredito',
-                              object = paste0('/data/sources/output/convenios_',
+                              bucket = params$bucket_s3,
+                              object = paste0('convenios_',
                                               params$ymd_sources, '_',
                                               params$tag_sources, '.feather'))
   # # clientes_comfu <- s3read_using(FUN = read_feather,
-  # #                                bucket = 'datank-concredito',
-  # #                                object = paste0('/data/sources/output/clientes_comfu_',
+  # #                                bucket = params$bucket_s3,
+  # #                                object = paste0('clientes_comfu_',
   # #                                                params$ymd_sources, '_',
   # #                                                params$tag_sources, '.feather'))
   # # voucher_companies <- s3read_using(FUN = read_feather,
-  # #                                   bucket = 'datank-concredito',
-  # #                                   object = paste0('/data/sources/output/voucher_companies_',
+  # #                                   bucket = params$bucket_s3,
+  # #                                   object = paste0('voucher_companies_',
   # #                                                   params$ymd_sources, '_',
   # #                                                   params$tag_sources, '.feather')) 
 }
@@ -769,20 +769,20 @@ if(params$bucket_s3 == "local") {
   write_feather(limpieza, paste0('/home/preprocess/output/limpieza_',
                                 params$ymd_preprocess, '_', 
                                 params$tag_preprocess, '.feather'))
-  write_feather(design_matrix, paste0('/home/preprocess/design_matrix_',
+  write_feather(design_matrix, paste0('/home/preprocess/output/design_matrix_',
                                       params$ymd_preprocess, '_', 
                                       params$tag_preprocess, '.feather'))
 } else {
   s3write_using(limpieza,
                 FUN = write_feather,
-                bucket = 'datank-concredito',
-                object = paste0('/data/preprocess/output/limpieza_',
+                bucket = params$bucket_s3,
+                object = paste0('limpieza_',
                                 params$ymd_preprocess, '_', 
                                 params$tag_preprocess, '.feather'))
   s3write_using(design_matrix,
                 FUN = write_feather,
-                bucket = 'datank-concredito',
-                object = paste0('/data/preprocess/output/design_matrix_',
+                bucket = params$bucket_s3,
+                object = paste0('design_matrix_',
                                 params$ymd_preprocess, '_', 
                                 params$tag_preprocess, '.feather'))
 }
