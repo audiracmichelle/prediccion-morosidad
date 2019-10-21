@@ -1,0 +1,6 @@
+# Esta ubicación la utiliza el pipeline para leer y escribir archivos
+# Los archivos en esta carpeta deben ser ignorados por git
+*
+
+# Excepto este mismo archivo
+!.gitignore

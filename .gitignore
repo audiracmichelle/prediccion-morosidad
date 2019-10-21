@@ -1,12 +1,9 @@
 # Mac files
 .DS_Store
 
-# Book output
+# Bookdown output
 _book/
 _bookdown_files/
-
-# Output folders
-output/
 
 ####
 
