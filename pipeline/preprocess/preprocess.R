@@ -108,11 +108,12 @@ system("echo '===== Loading params ====='")
 params <- list()
 
 # ####
-# # usar estos parámetros si se requieren leer los parametros directamente
+# # usar estos parámetros si se requieren leer los parametros directamente del script
 # params$ymd_sources <- 20180907
 # params$tag_sources <- "prod"
 # params$ymd_preprocess <- 20180907
 # params$tag_preprocess <- "prod"
+# params$bucket_s3 <- "local"
 # ####
 
 args = commandArgs(trailingOnly=TRUE)
@@ -122,13 +123,9 @@ params$ymd_preprocess <- args[3]
 params$tag_preprocess <- args[4]
 params$bucket_s3 <- args[5]
 
-print(params$bucket_s3)
-
 system("echo '===== Fetching data ====='")
 
 if(params$bucket_s3 == "local") {
-  # ####
-  # # usar estas líneas si se quieren leer los archivos directamente de la carpeta local
   calendario <- read_feather(paste0('/home/sources/output/calendario_',
                                     params$ymd_sources, '_', 
                                     params$tag_sources, '.feather'))
@@ -148,14 +145,12 @@ if(params$bucket_s3 == "local") {
                                   params$ymd_sources, '_',
                                   params$tag_sources, '.feather'))
 
-  # clientes_comfu <- read_feather(paste0('/home/sources/output/clientes_comfu_',
-  #                                       params$ymd_sources, '_', 
-  #                                       params$tag_sources, '.feather'))
-  # voucher_companies <- read_feather(paste0('/home/sources/output/voucher_companies_',
-  #                                          params$ymd_sources, '_', 
-  #                                          params$tag_sources, '.feather'))
-
-  ####
+  # # clientes_comfu <- read_feather(paste0('/home/sources/output/clientes_comfu_',
+  # #                                       params$ymd_sources, '_', 
+  # #                                       params$tag_sources, '.feather'))
+  # # voucher_companies <- read_feather(paste0('/home/sources/output/voucher_companies_',
+  # #                                          params$ymd_sources, '_', 
+  # #                                          params$tag_sources, '.feather'))
 } else {
   calendario <- s3read_using(FUN = read_feather,
                             bucket = 'datank-concredito',
@@ -187,7 +182,6 @@ if(params$bucket_s3 == "local") {
                               object = paste0('/data/sources/output/convenios_',
                                               params$ymd_sources, '_',
                                               params$tag_sources, '.feather'))
-  # 
   # # clientes_comfu <- s3read_using(FUN = read_feather,
   # #                                bucket = 'datank-concredito',
   # #                                object = paste0('/data/sources/output/clientes_comfu_',
@@ -772,15 +766,12 @@ limpieza$convenio[is.na(limpieza$convenio)] <- 0
 system("echo '===== Saving processed data ====='")
 
 if(params$bucket_s3 == "local") {
-  ####
-  # usar estas lineas si se quiere escribir el resultado directamente en la carpeta local
   write_feather(limpieza, paste0('/home/preprocess/output/limpieza_',
                                 params$ymd_preprocess, '_', 
                                 params$tag_preprocess, '.feather'))
   write_feather(design_matrix, paste0('/home/preprocess/design_matrix_',
                                       params$ymd_preprocess, '_', 
                                       params$tag_preprocess, '.feather'))
-  ####
 } else {
   s3write_using(limpieza,
                 FUN = write_feather,
@@ -795,4 +786,3 @@ if(params$bucket_s3 == "local") {
                                 params$ymd_preprocess, '_', 
                                 params$tag_preprocess, '.feather'))
 }
-

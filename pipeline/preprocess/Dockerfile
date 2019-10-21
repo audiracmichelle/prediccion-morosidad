@@ -15,8 +15,8 @@ RUN install2.r --error --deps TRUE feather
 RUN install2.r --error --deps TRUE data.table
 RUN install2.r --error --deps TRUE aws.s3
 
-ADD preprocess.R .
 ADD buscar_indice_primer_positivo.cpp .
 ADD buscar_indice_ultimo_positivo.cpp .
+ADD preprocess.R .
 
 ENTRYPOINT ["Rscript", "/app/preprocess.R"]

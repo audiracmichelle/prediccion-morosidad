@@ -8,11 +8,12 @@ Para construir la imagen `prediccion_morosidad_preprocess`, hay que usar
 $ docker build -t prediccion_morosidad_preprocess . 
 ```
 
-Aunque de forma predeterminada la tarea de este contenedor utiliza ubicaciones locales dentro de `pipeline/`, también es posible especificar un bucket de s3 de lectura y escritura de datos.
+Aunque de forma predeterminada la tarea de este contenedor lee y guarda archivos en ubicaciones locales dentro de la carpeta `pipeline/`, también es posible especificar un bucket de s3 de lectura y escritura de datos.
 
-Si se quieren utilizar las ubicaciones locales del pipeline, desde la carpeta `pipeline/` hay que usar
+Si se quieren utilizar las ubicaciones locales del pipeline, hay que usar
 
 ```sh
+$ cd .. #hay que moverse a la carpeta pipeline/
 $ docker run -it --rm  -v $(pwd)/sources/output:/home/sources/output -v $(pwd)/preprocess/output:/home/preprocess/output prediccion_morosidad_preprocess <ymd_sources> <tag_sources> <ymd_preprocess> <tag_preprocess> "local"
 ```
 
