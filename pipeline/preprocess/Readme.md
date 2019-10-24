@@ -25,10 +25,10 @@ $ docker run -it --rm  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACC
 
 Aquí está la descripción de los parámetros:
 
-* <ymd_sources> fecha correspondiente a la extraccion de datos. Los archivos generados por prediccion_morosidad_sources usan esta fecha como suffix
-* <tag_sources> los archivos generados por prediccion_morosidad_sources usan esta etiqueta como suffix
-* <ymd_preprocess> los archivos generados por prediccion_morosidad_preprocess usan esta fecha como suffix 
-* <tag_preprocess> los archivos generados por prediccion_morosidad_preprocess usan esta etiqueta como suffix
-* <bucket_s3> nombre del bucket de lectura y escritura, usar "local" si no se requiere usar s3
+* `<ymd_sources>` fecha correspondiente a la extraccion de datos. Los archivos generados por prediccion_morosidad_sources usan esta fecha como suffix
+* `<tag_sources>` los archivos generados por prediccion_morosidad_sources usan esta etiqueta como suffix
+* `<ymd_preprocess>` los archivos generados por prediccion_morosidad_preprocess usan esta fecha como suffix 
+* `<tag_preprocess>` los archivos generados por prediccion_morosidad_preprocess usan esta etiqueta como suffix
+* `<bucket_s3>` nombre del bucket de lectura y escritura, usar "local" si no se requiere usar s3
 
-La fecha de sources <ymd_sources> puede ser posterior a la fecha de preprocesamiento <ymd_preprocess>.
+La fecha de sources `<ymd_sources>` puede ser posterior a la fecha de preprocesamiento `<ymd_preprocess>`.
