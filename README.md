@@ -30,7 +30,7 @@ Esta imagen está basada en `rocker/tidyverse` y utiliza texlive-full.
 Primero hay que correr el contenedor.
 
 ```
-docker run --rm -e PASSWORD=book -p 8787:8787 -v $(pwd)/book:/home/rstudio/book prediccion-morosidad
+docker run --rm -e PASSWORD=book -p 8787:8787 -v $(pwd)/book:/home/rstudio/book -v $(pwd)/pipeline:/home/rstudio/pipeline prediccion-morosidad
 ```
 
 Una vez que el contenedor está corriendo hay que ir a `localhost:8787` en el browser y proporcionar el usuario `rstudio` y la contraseña `book`. 
