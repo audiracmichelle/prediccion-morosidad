@@ -1,6 +1,6 @@
 # prediccion-morosidad
 
-Un banco ha revolucionando la manera en que controla sus costos de cobranza por incumplimiento de pago. Con la ayuda de un equipo de científicos de datos el banco desarrolló la capacidad de analizar el comportamiento de miles de acreditados y predecir con alta precisión qué acreditados van a hacer pagos impuntuales y incumplir en sus pagos. 
+Un banco ha revolucionando la manera en que controla sus costos de cobranza por incumplimiento de pago. Con la ayuda de un equipo de científicos de datos el banco desarrolló la capacidad de analizar el comportamiento de miles de acreditados y predecir con alta precisión qué acreditados van a hacer pagos impuntuales y cuáles van a incumplir en sus pagos. 
 
 Este repositorio genera un documento en el que se presentan los detalles de este caso de negocio:
 
