@@ -33,7 +33,7 @@ description: "This is a minimal example of using the bookdown package to write a
 <!-- ), 'packages.bib') -->
 <!-- ``` -->
 
-```{r}
+```{r, include=FALSE}
 library(feather)
 library(tidyverse)
 
