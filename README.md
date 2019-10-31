@@ -1,6 +1,8 @@
 # prediccion-morosidad
 
-*prediccion-morosidad* genera un documento en el que se presenta un estudio de caso:
+Un banco ha revolucionando la manera en que controla sus costos de cobranza por incumplimiento de pago. Con la ayuda de un equipo de científicos de datos el banco desarrolló la capacidad de analizar el comportamiento de miles de acreditados y predecir con alta precisión qué acreditados van a hacer pagos impuntuales y cuáles van a incumplir en sus pagos. 
+
+Este repositorio genera un documento en el que se presentan los detalles de este caso de negocio:
 
 * negocio - institución otorgadora de crédito
 * problema de negocio - altos costos del área de cobranza
@@ -28,7 +30,7 @@ Esta imagen está basada en `rocker/tidyverse` y utiliza texlive-full.
 Primero hay que correr el contenedor.
 
 ```
-docker run --rm -e PASSWORD=book -p 8787:8787 -v $(pwd)/book:/home/rstudio/book prediccion-morosidad
+docker run --rm -e PASSWORD=book -p 8787:8787 -v $(pwd)/book:/home/rstudio/book -v $(pwd)/pipeline:/home/rstudio/pipeline prediccion-morosidad
 ```
 
 Una vez que el contenedor está corriendo hay que ir a `localhost:8787` en el browser y proporcionar el usuario `rstudio` y la contraseña `book`. 
