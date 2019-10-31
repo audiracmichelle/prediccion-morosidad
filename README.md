@@ -14,7 +14,7 @@ En el estudio de caso se describe cómo se creo el producto de datos que genera 
 
 El documento se puede acceder en github pages
 
-[https://audiracmichelle.github.io/prediccion-morosidad/docs/index.html](https://audiracmichelle.github.io/prediccion-morosidad/docs/index.html)
+[https://audiracmichelle.github.io/prediccion-morosidad/](https://audiracmichelle.github.io/prediccion-morosidad/)
 
 ## Cómo instalar
 
