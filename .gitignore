@@ -2,7 +2,6 @@
 .DS_Store
 
 # Bookdown output
-_book/
 _bookdown_files/
 
 ####
