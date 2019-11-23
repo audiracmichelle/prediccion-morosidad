@@ -1,0 +1,94 @@
+<!-- # Introduction {#intro} -->
+
+<!-- You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods). -->
+
+<!-- Figures and tables with captions will be placed in `figure` and `table` environments, respectively. -->
+
+<!-- ```{r nice-fig, fig.cap='Here is a nice figure!', out.width='80%', fig.asp=.75, fig.align='center'} -->
+<!-- par(mar = c(4, 4, .1, .1)) -->
+<!-- plot(pressure, type = 'b', pch = 19) -->
+<!-- ``` -->
+
+<!-- Reference a figure by its code chunk label with the `fig:` prefix, e.g., see Figure \@ref(fig:nice-fig). Similarly, you can reference tables generated from `knitr::kable()`, e.g., see Table \@ref(tab:nice-tab). -->
+
+<!-- ```{r nice-tab, tidy=FALSE} -->
+<!-- knitr::kable( -->
+<!--   head(iris, 20), caption = 'Here is a nice table!', -->
+<!--   booktabs = TRUE -->
+<!-- ) -->
+<!-- ``` -->
+
+<!-- You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015]. -->
+
+# Contexto 
+
+## La organización
+
+La organización en estudio es una SOFOM (Sociedad Financiera de Objeto Múltiple) que realiza otorgamiento de crédito. En México las SOFOMes son una buena opción para aquellos sectores de la población con acceso a financiamiento limitado. Esto es porque la forma en que ofrecen créditos generalmente es más simple, flexible y con menores requisitos que la de las grandes Instituciones financieras. Cabe mencionar que el costo de esta accesibilidad es una tasa de interés más alta. 
+
+En este trabajo no revelaremos la razón social de la SOFOM en estudio y de aquí en adelante nos referiremos a esta como el *Banco*. Tampoco se presentarán los datos globales del Banco: como el tamaño de su cartera de crédito o su número de acreditados. Sin embargo, los fines de este trabajo requieren que se describan las características de los créditos que otorga el Banco y en particular nos interesa explicar la forma en que este clasifica el comportamiento de pago de sus clientes.
+
+Aunque el Banco no otorga créditos de forma directa en sucursal; tampoco se trata de un negocio de e-lending. La forma en que el Banco presta es a través de comisionistas. No nos concentraremos en explicar la relación entre los comisionistas y el Banco ya que, para nuestros fines, la podemos entender simplemente como la relación de un acreedor con un deudor en un contrato de crédito. Por esto, nos referimos a los comisionistas como *clientes* o *acreditados*.
+
+Los créditos que el Banco otorga a sus clientes son de tipo *revolvente*. A diferencia de los créditos tradicionales en los que se presta un valor inicial y se acuerda un plazo y pagos fijos para saldar la deuda, los créditos revolventes cuentan con un límite y los clientes pueden disponer del crédito cuando lo requieren.
+
+El Banco guarda la información transaccional de sus clientes y, de acuerdo a una evaluación hecha por un equipo de científicos de datos, cuenta con una **madurez de datos** suficiente para incorporar pipelines de aprendizaje de máquina a sus procesos. 
+
+## Problema a Resolver
+
+El Banco empezó a trabajar con un equipo de científicos de datos en un proyecto para crear *indicadores de riesgo* de sus clientes. Sin dar a conocer valores específicos del negocio, a continuación explicaremos la motivación detrás de la creación de dichos indicadores.
+
+Previo a iniciar el proyecto, el Banco asegura haber observado una tendencia ascendente en el quebranto de su cartera. Esto significa que hubo un aumento en el número de clientes que dejaban definitivamente de pagar. Por una parte dicho aumento se podía explicar por el crecimiento en la cartera; sin embargo, una idea prevalente en el Banco es que cambios en su estrategia aceleraron la tendencia.
+
+Para conocer los cambios de estrategia que hizo el Banco, primero hay que entender el calendario de pagos que utiliza. Como en cualquier crédito revolvente, cada inicio de *corte* se determina el *monto a pagar* de cada cliente y la *fecha de pago* es la fecha límite en la que los clientes deben cubrir el monto que les corresponde. 
+
+Las fechas de corte de los créditos del Banco son quincenales y regularmente caen el 8 de cada mes para pagar el 18, y el 23 para pagar el 3 del siguiente mes. Así el calendario de fechas de corte y pago lo podemos representar en una línea de tiempo como en la figura \<ref\>.
+
+```{r, calendario, fig.cap="Representación de fechas de corte y fechas de pago", echo=FALSE, out.width="70%", fig.align="center"}
+knitr::include_graphics("./images/calendario.png")
+```
+
+La *cobranza preventiva* se refiere a aquellas acciones que se realizan antes de la fecha límite de pago para recordar a los acreditados que realicen sus pagos. La *cobranza correctiva* son las acciones que se disparan para dar seguimiento a los clientes que no cubrieron su monto correspondiente antes de la fecha de pago. Créditos con 90 días vencidos pasan a quebranto.
+
+De acuerdo con el Banco, anteriormente se decidió disminuir los recursos destinados a la cobranza preventiva. Esa estrategia provocó que eventualmente tuvieran que aumentarse los recursos destinados a la cobranza correctiva y que ultimadamente aumentara el quebranto más de lo esperado. 
+
+La intuición detrás del proyecto es que en al identificar anticipadamente un posible evento de impago es posible fortalecer la cobranza preventiva. Además, generar indicadores de riesgo permite crear controles para evitar que clientes en problemas intenten financiar su deuda con más deuda.
+
+## Solución Propuesta
+
+Los clientes pueden cubrir el monto a pagar en una sola exhibición o en varios abonos. La fecha en la que los abonos o movimientos cubren el monto a pagar la llamaremos *fecha de abono*. Dependiendo del momento en que ocurre la fecha de abono clasificaremos los pagos en tres:
+
+* **Pago puntual** si la fecha de abono ocurre antes de la fecha de pago.
+* **Pago impuntual** si la fecha de abono se encuentra después de la fecha de pago.
+* **Pago en rescate** si no se cubrió el monto a pagar antes de la fecha de corte del siguiente período.
+
+En la figura \<ref\> se esquematiza la clasificación de pagos en una línea de tiempo.
+
+```{r, clasificacion, echo=FALSE, out.width="70%", fig.align="center", fig.cap="Clasificación de pagos"}
+knitr::include_graphics("./images/clasificacion_pagos.png")
+```
+
+El equipo de científicos de datos propuso construir dos indicadores de riesgo. El primero, que llamamos el **indicador de impuntualidad** mide la probabilidad de que un cliente haga pagos impuntuales en los siguientes tres períodos o cortes. El segundo, el **indicador de riesgo**, es el indicador de impuntualidad ponderado por el saldo actual del cliente. Al ponderar por saldo, el indicador de riesgo permite priorizar a los clientes impuntuales que representan un mayor riesgo para el negocio.
+
+Considerando datos históricos, cálculamos el número de días que se aleja la fecha de abono de la fecha de pago. Así los valores menores o iguales a cero representan pagos puntuales y los mayores a cero pagos impuntuales. En la figura \<ref\> tenemos la distribución de estos valores acotados entre -7 y 20.  El Banco se refiere a esta distribución como el *triángulo de pagos*. Como vemos los clientes prefieren pagar uno o dos días antes de la fecha de pago.
+
+```{r, triangulo, fig.cap="Triángulo", echo=FALSE, fig.cap="Triángulo de pagos", fig.align="center"}
+creditos %>% 
+  mutate(triangulo = if_else(dias_despues_fechaPago_prom_decay > 20, 20, dias_despues_fechaPago_prom_decay), 
+         triangulo = if_else(triangulo < -7, -7, triangulo), 
+         triangulo = floor(triangulo)) %>% 
+  group_by(triangulo) %>% 
+  summarize(count = n()) %>% 
+  ungroup() %>% 
+  mutate(color_triangulo = "impuntual", 
+         color_triangulo = if_else(triangulo <= 0, "puntual", color_triangulo), 
+         color_triangulo = if_else(triangulo > 5, "rescate", color_triangulo)) %>% 
+  ggplot(aes(x=triangulo, y=count, fill = color_triangulo)) + 
+  geom_col() + 
+  scale_fill_manual(values = c("puntual" = "#6aa84f7d", 
+                               "impuntual" = "#f1c2327d", 
+                               "rescate" = "#cc000080"))
+  
+```
+
+La propuesta es que el indicador de impuntualidad sea el encargado de predecir cuando el momento de pago de un cliente va a caer en la cola amarilla y roja.
