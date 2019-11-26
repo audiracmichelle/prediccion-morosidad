@@ -4,27 +4,27 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>A Minimal Book Example</title>
-  <meta name="description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  <title>Predicción de Morosidad</title>
+  <meta name="description" content="En este reporte se presenta un estudio de caso en el que se aplica la Ciencia de Datos" />
   <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="A Minimal Book Example" />
+  <meta property="og:title" content="Predicción de Morosidad" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  <meta property="og:description" content="En este reporte se presenta un estudio de caso en el que se aplica la Ciencia de Datos" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="A Minimal Book Example" />
+  <meta name="twitter:title" content="Predicción de Morosidad" />
   
-  <meta name="twitter:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  <meta name="twitter:description" content="En este reporte se presenta un estudio de caso en el que se aplica la Ciencia de Datos" />
   
 
-<meta name="author" content="Yihui Xie" />
+<meta name="author" content="Michelle Audirac" />
 
 
-<meta name="date" content="2019-10-31" />
+<meta name="date" content="2019-11-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,68 +52,6 @@
 
 
 
-<style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
-}
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {  }
-@media screen {
-a.sourceLine::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -131,9 +69,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">A Minimal Book Example</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="#intro"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="#historias-de-crédito"><i class="fa fa-check"></i><b>1.1</b> Historias de crédito</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="#comportamiento-de-pago"><i class="fa fa-check"></i><b>1.2</b> Comportamiento de Pago</a></li>
+<li class="chapter" data-level="1" data-path="01-context.html"><a href="#contexto"><i class="fa fa-check"></i><b>1</b> Contexto</a><ul>
+<li class="chapter" data-level="1.1" data-path="01-context.html"><a href="#la-organización"><i class="fa fa-check"></i><b>1.1</b> La organización</a></li>
+<li class="chapter" data-level="1.2" data-path="01-context.html"><a href="#problema-a-resolver"><i class="fa fa-check"></i><b>1.2</b> Problema a Resolver</a></li>
+<li class="chapter" data-level="1.3" data-path="01-context.html"><a href="#solución-propuesta"><i class="fa fa-check"></i><b>1.3</b> Solución Propuesta</a></li>
+<li class="chapter" data-level="1.4" data-path="01-context.html"><a href="#mecanismo-de-validación"><i class="fa fa-check"></i><b>1.4</b> Mecanismo de Validación</a></li>
+<li class="chapter" data-level="1.5" data-path="01-context.html"><a href="#plan-de-trabajo"><i class="fa fa-check"></i><b>1.5</b> Plan de Trabajo</a></li>
+<li class="chapter" data-level="1.6" data-path="01-context.html"><a href="#contacto"><i class="fa fa-check"></i><b>1.6</b> Contacto</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -147,7 +89,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">A Minimal Book Example</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Predicción de Morosidad</a>
           </h1>
         </div>
 
@@ -156,63 +98,145 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">A Minimal Book Example</h1>
-<p class="author"><em>Yihui Xie</em></p>
-<p class="date"><em>2019-10-31</em></p>
+<h1 class="title">Predicción de Morosidad</h1>
+<p class="author"><em>Michelle Audirac</em></p>
+<p class="date"><em>2019-11-26</em></p>
 </div>
-<div id="intro" class="section level1">
-<h1><span class="header-section-number">Chapter 1</span> Introducción</h1>
-<p>Un banco buscó a un grupo de científicos de datos con un problema en mente: pedirles ayuda para minimizar la impuntualidad de pago de sus clientes.</p>
-<p>La calidad de cartera del banco había disminuido en los últimos años. Se había seguido una estrategia reactiva en la que se destinaban muchos recursos al área de cobranza y se habían descuidado las herramientas preventivas. Era momento de cambiar el curso.</p>
-<p>La intuición detrás del proyecto es que en al identificar las causas o síntomas de la morosidad, es posible acercarse a los clientes antes de que dejen de pagar y, por otro lado, limitarles la capacidad de aumentar su créditos.</p>
-<p>La capacidad de predecir la impuntualidad o el impago repercute directamente en la calidad de la cartera del banco. Esto es especialmente cierto cuando se tienen clientes que aumentan el valor de su crédito para ayudarse a cubrir su deuda anterior.</p>
-<p>…</p>
-<p>&lt; dar más detalle de descripción de negocio y descripción de proyecto &gt;</p>
-<p>&lt; mencionar que en este proyecto se trabaja con créditos revolventes &gt;</p>
-<p>…</p>
-<div id="historias-de-crédito" class="section level2">
-<h2><span class="header-section-number">1.1</span> Historias de crédito</h2>
-<p>Podemos pensar en un crédito como un conjunto de series de tiempo -saldo, intereses, pagos- que corresponden a un acreditado. Las series de tiempo de personas con buen historial crediticio comparten ciertos patrones, lo mismo ocurre para personas que son impuntuales o para las que están próximas a dejar de pagar.</p>
-<p>Para familiarizarnos con esto, lo primero que haremos es entender cómo se “ven” los créditos con unos ejemplos. En la figura &lt;ref&gt; tenemos representado un acreditado que cumple puntualmente con sus pagos. Una línea representa el valor del saldo del crédito en el tiempo; la otra, la suma de los montos abonados puntualmente en cada fecha de pago.</p>
-<p><img src="book_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<p>Como vemos el cliente mantiene un saldo aproximado de $40,000 por un año, desde julio 2016 hasta julio 2017. En septiembre del 2017 incrementa el monto de su crédito a casi $80,000, de ahí en adelante decide liquidar el crédito por lo que el saldo decrece poco a poco y se va acercando a cero. Este acreditado siempre hizo pagos puntuales.</p>
-<p>El siguiente ejemplo representa un acreditado que realiza pagos impuntuales. La figura &lt;ref&gt; contiene una tercera línea que representa los montos abonados impuntualmente en cada periodo.</p>
-<p><img src="book_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>Este acreditado aumentó el monto de su crédito tanto en octubre como en abril y, a diferencia del caso anterior, no todos sus abonos son puntuales. Como vemos, en varias ocasiones el valor de los abonos impuntuales es mayor a cero.</p>
+<div id="contexto" class="section level1">
+<h1><span class="header-section-number">Capítulo 1</span> Contexto</h1>
+<div id="la-organización" class="section level2">
+<h2><span class="header-section-number">1.1</span> La organización</h2>
+<p>La organización en estudio es una SOFOM (Sociedad Financiera de Objeto Múltiple) que realiza otorgamiento de crédito. En México las SOFOMes son una buena opción para aquellos sectores de la población con acceso a financiamiento limitado. Esto es porque la forma en que ofrecen créditos generalmente es más simple, flexible y con menores requisitos que la de las grandes Instituciones financieras. Cabe mencionar que el costo de esta accesibilidad es una tasa de interés más alta.</p>
+<p>En este trabajo no revelaremos la razón social de la SOFOM en estudio y de aquí en adelante nos referiremos a esta como el <em>Banco</em>. Tampoco se presentarán los datos globales del Banco: como el tamaño de su cartera de crédito o su número de acreditados. Sin embargo, los fines de este trabajo requieren que se describan las características de los créditos que otorga el Banco y en particular nos interesa explicar la forma en que este clasifica el comportamiento de pago de sus clientes.</p>
+<p>Aunque el Banco no otorga créditos de forma directa en sucursal; tampoco se trata de un negocio de e-lending. La forma en que el Banco presta es a través de comisionistas. No nos concentraremos en explicar la relación entre los comisionistas y el Banco ya que, para nuestros fines, la podemos entender simplemente como la relación de un acreedor con un deudor en un contrato de crédito. Por esto, nos referimos a los comisionistas como <em>clientes</em> o <em>acreditados</em>.</p>
+<p>Los créditos que el Banco otorga a sus clientes son de tipo <em>revolvente</em>. A diferencia de los créditos tradicionales en los que se presta un valor inicial y se acuerda un plazo y pagos fijos para saldar la deuda, los créditos revolventes cuentan con un límite y los clientes pueden disponer del crédito cuando lo requieren.</p>
+<p>El Banco guarda la información transaccional de sus clientes y, de acuerdo a una evaluación hecha por un equipo de científicos de datos, cuenta con una <strong>madurez de datos</strong> suficiente para incorporar pipelines de aprendizaje de máquina a sus procesos.</p>
 </div>
-<div id="comportamiento-de-pago" class="section level2">
-<h2><span class="header-section-number">1.2</span> Comportamiento de Pago</h2>
-<p>Ya conocemos a grandes rasgos qué componentes de los créditos nos interesan. En esta sección vemos la manera específica en la que el Negocio clasifica los pagos de sus clientes y el lingo que utiliza.</p>
-<p>Cada inicio de quincena (que llamaremos <strong>fecha de corte</strong>) se conoce el monto a pagar de cada cliente. Esa cantidad debe ser abonada antes de la fecha límite de pago (<strong>fecha de pago</strong>) que es ocho días después de la fecha de corte. Los clientes pueden cubrir el monto abonar en una sola exhibición o realizar varios abonos. Dependiendo del momento en que se hagan los movimientos, estos se clasifican como:</p>
+<div id="problema-a-resolver" class="section level2">
+<h2><span class="header-section-number">1.2</span> Problema a Resolver</h2>
+<p>El Banco buscó a un equipo de científicos de datos para trabajar en un proyecto que consistiría en la creación de <em>indicadores de riesgo</em> de sus clientes. A continuación explicaremos la motivación detrás de la creación de dichos indicadores. Por confidencialidad, no se dan a conocer valores específicos del negocio.</p>
+<p>Previo a iniciar el proyecto, el Banco asegura haber observado una tendencia ascendente en el quebranto de su cartera. Esto significa que hubo un aumento en el número de clientes que dejaban definitivamente de pagar. Por una parte dicho aumento se podía explicar por el crecimiento en la cartera; sin embargo, una idea prevalente en el Banco es que cambios en su estrategia aceleraron la tendencia.</p>
+<p>Para conocer los cambios de estrategia que hizo el Banco, primero hay que entender el calendario de pagos que utiliza. Como en cualquier crédito revolvente, cada inicio de <em>corte</em> se determina el <em>monto a pagar</em> de cada cliente y la <em>fecha de pago</em> es la fecha límite en la que los clientes deben cubrir el monto que les corresponde. Un pago lo entendemos como un par de datos dado por (fecha de corte, monto a pagar).</p>
+<p>Las fechas de corte de los créditos del Banco son quincenales y regularmente caen el 8 de cada mes para pagar el 18, y el 23 para pagar el 3 del siguiente mes. Así el calendario de fechas de corte y pago lo podemos representar en una línea de tiempo como en la figura <a href="#fig:calendario">1.1</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:calendario"></span>
+<img src="images/calendario.png" alt="Representación de fechas de corte y fechas de pago" width="70%" />
+<p class="caption">
+Figure 1.1: Representación de fechas de corte y fechas de pago
+</p>
+</div>
+<p>La <em>cobranza preventiva</em> se refiere a aquellas acciones que se realizan antes de la fecha límite de pago para recordar a los acreditados que realicen sus pagos. La <em>cobranza correctiva</em> son las acciones que se disparan después de la fecha de pago para dar seguimiento a los clientes que no cubrieron su monto correspondiente. Créditos con 90 días vencidos pasan a quebranto.</p>
+<p>De acuerdo con el Banco, anteriormente se decidió disminuir los recursos destinados a la cobranza preventiva. Esa estrategia provocó que eventualmente tuvieran que aumentarse los recursos destinados a la cobranza correctiva y que ultimadamente aumentara el quebranto más de lo esperado.</p>
+<p>La motivación detrás del proyecto es fortalecer la cobranza preventiva identificando los posibles evento de impago. Además, generar indicadores de riesgo permite crear controles para evitar que clientes en problemas intenten financiar su deuda con más deuda.</p>
+</div>
+<div id="solución-propuesta" class="section level2">
+<h2><span class="header-section-number">1.3</span> Solución Propuesta</h2>
+<p>Los clientes pueden cubrir su monto a pagar en una sola exhibición o en varios abonos. La fecha en la que los abonos o movimientos cubren el monto a pagar la llamaremos <em>fecha de abono</em>. Dependiendo del momento en que ocurre la fecha de abono el Banco clasifica los pagos en tres:</p>
 <ul>
-<li><strong>Abono puntual</strong> si el movimiento ocurre antes de la fecha de pago</li>
-<li><strong>Abono impuntual</strong> si el movimiento ocurre después de la fecha de pago pero antes de la siguiente fecha de corte</li>
-<li><strong>Abono de rescate</strong> si el movimiento ocurre después de la siguiente fecha de corte</li>
+<li><strong>Pago puntual</strong> si la fecha de abono ocurre antes de la fecha de pago.</li>
+<li><strong>Pago impuntual</strong> si la fecha de abono se encuentra después de la fecha de pago.</li>
+<li><strong>Pago en rescate</strong> si no se cubrió el monto a pagar antes de la fecha de corte del siguiente período.</li>
 </ul>
-<p>La fecha en la que los abonos o movimientos cubren el mínimo a pagar la llamaremos <strong>fecha de abono</strong>. Veamos algunos ejemplos de comportamiento de pago en función del momento en que ocurre la fecha de abono.</p>
-<ul>
-<li><strong>Ejemplo 1</strong></li>
-</ul>
-<p><img src="images/movs_1.png" /></p>
-<p>En el ejemplo de la figura &lt;ref&gt; el cliente realizó sus movimientos de forma puntual, es decir la fecha de abono es anterior a la fecha de pago.</p>
-<ul>
-<li><strong>Ejemplo 2</strong></li>
-</ul>
-<p><img src="images/movs_2.png" /></p>
-<p>En el ejemplo de la figura &lt;ref&gt; el cliente hizo algunos movimientos antes de la fecha de pago pero terminó de cubrir el monto a pagar después de esa fecha. En este caso la fecha de abono se encuentra entre la fecha de pago y la fecha de corte del siguiente periodo.</p>
-<ul>
-<li><strong>Ejemplo 3</strong></li>
-</ul>
-<p><img src="images/movs_3.png" /></p>
-<p>En este último ejemplo tenemos que los abonos del periodo son impuntuales y de rescate, y la fecha de abono ocurre después de la fecha de corte del siguiente periodo.</p>
-<p>Nos hemos familiarizado con los términos fecha de corte, fecha de pago, fecha de abono; también ahora entendemos qué significa que un abono o movimiento sea puntual, impuntual o de rescate. Finalmente, de forma similar, clasificaremos pagos de corte en función de la fecha de abono:</p>
-<ul>
-<li><strong>Pago puntual</strong> si la fecha de abono se encuentra antes de la fecha de pago</li>
-<li><strong>Pago impuntual</strong> si la fecha de abono se encuentra después de la fecha de pago y antes de la fecha de corte del siguiente periodo</li>
-<li><strong>Pago en rescate</strong> si no se cubrió el monto a pagar antes de la fecha de corte del siguiente período. Cuando un cliente deja de pagar definitavamente, el cliente está <em>en rescate</em> o cayó en <em>default</em>.</li>
-</ul>
-<p>&lt; falta incluir definición de alto riesgo &gt;</p>
-<p>Este será el lingo que usaremos de aquí en adelante.</p>
+<p>En la figura <a href="#fig:clasificacion">1.2</a> se esquematiza la clasificación de pagos en una línea de tiempo.</p>
+<div class="figure" style="text-align: center"><span id="fig:clasificacion"></span>
+<img src="images/clasificacion_pagos.png" alt="Clasificación de pagos" width="70%" />
+<p class="caption">
+Figure 1.2: Clasificación de pagos
+</p>
+</div>
+<p>El equipo de científicos de datos propuso construir un producto de datos que generara dos indicadores de riesgo. El primero, que llamamos el <strong>indicador de impuntualidad</strong> mide, la probabilidad de que un cliente haga pagos impuntuales en los siguientes tres períodos o cortes. El segundo, el <strong>monto en riesgo</strong>, es el indicador de impuntualidad ponderado por el saldo actual del cliente. Al ponderar por saldo, el monto en riesgo permite priorizar a los clientes impuntuales que representan un mayor riesgo para el negocio.</p>
+<p>Considerando datos históricos, cálculamos el número de días que se aleja la fecha de abono de la fecha de pago. A esta diferencia la llamamos el <em>momento de pago</em>. Así los momentos de pago menores o iguales a cero representan pagos puntuales y los mayores a cero pagos impuntuales. En la figura <a href="#fig:triangulo">1.3</a> tenemos la distribución de los momentos de pago acotados entre -7 y 20. El Banco se refiere a esta distribución como el <em>triángulo de pagos</em>. Como vemos los clientes prefieren pagar un día antes de la fecha de pago, es decir la moda del momento de pago es -1.</p>
+<div class="figure" style="text-align: center"><span id="fig:triangulo"></span>
+<img src="book_files/figure-html/triangulo-1.png" alt="Triángulo de pagos" width="672" />
+<p class="caption">
+Figure 1.3: Triángulo de pagos
+</p>
+</div>
+<p>De acuerdo con los científicos de datos, el indicador de impuntualidad debía ser el encargado de predecir si, en los siguientes tres cortes, el momento de pago de un cliente caerá en la cola amarilla y roja del tríangulo de pagos. El Banco aceptó la propuesta.</p>
+</div>
+<div id="mecanismo-de-validación" class="section level2">
+<h2><span class="header-section-number">1.4</span> Mecanismo de Validación</h2>
+<p>El indicador de impuntualidad requiere un modelo supervisado de clasificación; los modelos supervisados requieren datos etiquetados. Como el Banco considera que es común que los clientes se atrasen uno o dos días sin representar un riesgo, se decidió que la etiqueta debía considerar el promedio de los momentos de pago de los siguientes tres cortes. La etiqueta es 1 si el promedio es mayor a 2 y la etiqueta es 0 en los demás casos.</p>
+<p>Se obtuvieron etiquetas para cada cliente y para cada corte en los datos históricos del Banco. Con esto, tenemos que el 87.85% son casos negativos y el 12.15% casos positivos.</p>
+<p>Para nuestro problema de clasificación es posible utilizar cualquiera de los siguientes modelos base: la <strong>regla cero</strong> (zero rule, 0R or ZeroR) o el <strong>muestreo aleatorio</strong>. La regla cero consiste en asignar una predicción “cero” en todos los casos.</p>
+<p>Calculando las métricas de desempeño teóricas para la regla cero tenemos un <em>accuracy</em> de 87.85%, un <em>recall</em> de 0% y una <em>especificidad</em> de 100%. La <em>matriz de confusión</em> (condicionada al actual) correspondiente es:</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th></th>
+<th><strong>actual</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>positivo</td>
+<td>negativo</td>
+</tr>
+<tr class="even">
+<td><strong>predicción</strong></td>
+<td>positivo</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>negativo</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+</tbody>
+</table>
+<p>Para las métricas de desempeño teóricas del muestreo aleatorio tenemos un accuracy de 78.65% (0.8785 * 0.8785 + 0.1215 * 0.1215), un recall de 12.15%, una especificidad de 87.85% y la siguiente matriz de confusión (condicionada al actual):</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th></th>
+<th><strong>actual</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>positivo</td>
+<td>negativo</td>
+</tr>
+<tr class="even">
+<td><strong>predicción</strong></td>
+<td>positivo</td>
+<td>12.15%</td>
+<td>12.15%</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>negativo</td>
+<td>87.85%</td>
+<td>87.85%</td>
+</tr>
+</tbody>
+</table>
+<p>Al contar con estos valores de referencia se estableció que para ponerse en producción el indicador de impuntualidad, este debía alcanzar al menos un nivel de recall de 50% y de especificidad de 90%. El accuracy correspondiente a estos valores de recall y especificidad es de 85% (0.8785 * 0.9 + 0.1215 * 0.5).</p>
+</div>
+<div id="plan-de-trabajo" class="section level2">
+<h2><span class="header-section-number">1.5</span> Plan de Trabajo</h2>
+<p>El entregable del proyecto consiste en un pipeline de datos que permite actualizar cada quincena los últimos movimientos de los clientes y producir los indicadores o predicciones correspondientes. Con esto en mente, el plan de trabajo que los científicos de datos siguieron fue:</p>
+<ol style="list-style-type: decimal">
+<li><strong>EDA</strong> se dio sentido a los datos transaccionales para que reflejaran las historias de crédito de los clientes. Para esto, se trabajó con los dueños de los datos del Banco. La limpieza de datos fue extensiva y se incorporó al pipeline una tarea que identifica, limpia y lista errores cada vez que se actualizan los datos.</li>
+<li><strong>Feature engineering</strong> se transformaron todas las variables explicativas para que capturaran el comportamiento pasado de los acreditados usando <em>promedios móviles con decaimiento exponencial</em>.</li>
+<li><strong>Model selection</strong> se probaron distintos modelos de clasificación y se determinaron los mejores hiperparámetros, entre ellos el <em>halflife</em> del decaimiento exponencial.</li>
+<li><strong>Code refactoring</strong> se factorizó el código y se crearon contenedores para cada una de las tareas del pipeline.</li>
+</ol>
+<p>Además, se trabajó con ingenieros de datos que estuvieron encargados del <strong>ETL</strong> y del <strong>pipeline testing</strong>. Para el ETL se desarrollaron los procesos de extracción de datos que alimentan al resto de las tareas. Durante el pipeline testing se validaron los resultados que produce el pipeline y se probó con el Banco el funcionamiento de la entrega.</p>
+<p>En el siguiente capítulo describiremos las etapas 1 a 4 de este plan de trabajo. Cabe mencionar que el plan de trabajo de este proyecto también contempla etapas que no se cubren en este documento. En esas etapas se dió seguimiento al efecto de las acciones de cobranza preventiva que el Banco implementó a partir de los indicadores de riesgo que se desarrollaron.</p>
+</div>
+<div id="contacto" class="section level2">
+<h2><span class="header-section-number">1.6</span> Contacto</h2>
+<p>Liliana Millán | liliana.millan@gmail.com | líder del equipo de científicos de datos que trabajó en el proyecto</p>
 
 </div>
 </div>
