@@ -3,6 +3,61 @@
 <!-- We describe our methods in this chapter. -->
 
 
+
+En un portafolio de crédito podemos ver como 
+
+Una vez que los científicos de datos y los representantes del Banco acordaron que tablas de datos serían utilizadas 
+
+La primer tabla que se exploró es 
+
+A continuación describiremos las tablas de datos que se utilizaron. 
+
+* transacciones
+
+
+
+
+
+
+
+Por ejemplo, 
+
+Ya que a través de los años el Banco migró su esquema de base de datos, la primer fecha de en la que se tienen registros en 
+El Banco cuenta con registros de transacciones de pago de sus clientes desde Mayo de 2013. 
+
+
+ El registro de transacciones A la fecha, El esquema de base de datos que utiliza para manejar y registrar sus transacciones tiene más de tres años y suficientes datos. 
+os datos 
+La mediana de longitud de vida de los créditos del Banco es de xx cortes o quincenas. Después de acotar la vida de los créditos en tres años o $1,000$ cortes, en la figura \<ref\> se muestra la distribución de la longitud de vida de los créditos del Banco.  
+
+Veamos la distribución de la vida media de los créditos en los portafolios
+
+ Para familiarizarnos con esto, lo primero que haremos es entender cómo se "ven" los créditos con unos ejemplos. 
+
+```{r}
+ names(creditos)
+```
+
+Las series de tiempo de personas con buen historial crediticio comparten ciertos patrones, lo mismo ocurre con personas impuntuales. En este trabajo usamos modelos supervisados para identificar dichos patrones.
+
+; autorizar el proyecto de desarrollo del modelo requería identificar mecanismos de validación. 
+
+E
+
+A continuación presentaremos las métricas de desempeño del modelo base y del modelo nulo que el indicador de impuntualidad debía superar.
+
+
+debía superar para que pudiera incorporarse a los procesos del Banco.
+
+A continuación explicamos como se construyó la variable de salida.
+
+Es indispensable contar con labeled data para usar un modelos supervisado. ,   labels
+
+## Modelo Base y Modelo Nulo
+
+al menos seis periodos
+identificar cuando empieza a tener saldo positivo
+
 # Introducción {#intro}
 
 Un banco buscó a un grupo de científicos de datos con un problema en mente: pedirles ayuda para minimizar la impuntualidad de pago de sus clientes. 
