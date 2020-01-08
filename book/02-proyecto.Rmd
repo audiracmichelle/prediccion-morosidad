@@ -2,86 +2,211 @@
 
 <!-- Here is a review of existing methods. -->
 
-# El Modelo
+# Proyecto
 
- 
+## Historias de Crédito
+
+Para poder analizar un portafolio de crédito, debemos entender que cada crédito cuenta una historia diferente. Podemos pensar en una historia de crédito como un conjunto de series de tiempo -saldos, pagos- que corresponden a un acreditado. En la figura \<ref\> tenemos el saldo de un crédito en el tiempo. Veamos qué nos puede decir la serie de tiempo del saldo sobre este crédito. 
+
+<!-- ```{r} -->
+<!-- ejemplos <- creditos %>%  -->
+<!--   filter(indice_ultimo_saldo >= 40,  -->
+<!--          indice_ultimo_saldo <= 50,  -->
+<!--          max_fechaCorteDespues <= as.Date("2018-05-01")) %>%  -->
+<!--   group_by(pkcolocadora) %>%  -->
+<!--   summarise(min_saldo = min(saldo_prom_decay),  -->
+<!--             max_saldo = max(saldo_prom_decay),  -->
+<!--             diff_saldo = max_saldo - min_saldo,  -->
+<!--             label = max(label_impuntual_2)) %>%  -->
+<!--   ungroup() %>%  -->
+<!--   filter(diff_saldo >= 50000,  -->
+<!--          label == 0) %>%  -->
+<!--   pull(pkcolocadora) -->
+
+<!-- for(colocadora_ej in ejemplos){ -->
+<!--   p <- creditos %>% -->
+<!--     filter(pkcolocadora == colocadora_ej) %>% -->
+<!--     select(fechaCorte,  -->
+<!--          saldoActual,  -->
+<!--          saldo_prom_decay,  -->
+<!--          minimoPagar,  -->
+<!--          puntual) %>%  -->
+<!--     rename(date = fechaCorte) %>%  -->
+<!--    gather(key, value,-date) %>% -->
+<!--    ggplot(aes(x = date,  -->
+<!--              y = value, -->
+<!--              colour = key)) +  -->
+<!--     geom_line() +  -->
+<!--     labs(title = colocadora_ej) -->
+<!--   print(p) -->
+<!-- } -->
+<!-- ``` -->
 
 
+```{r, serie1, echo=FALSE, out.width="80%", fig.pos="H", fig.align="center", fig.cap="Saldo y Mínimo a Pagar de una Colocadora"}
+colocadora_ej <- 21160
 
+design_matrix %>%
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaPago, 
+         saldoActual,
+         minimoPagar) %>% 
+  rename(date = fechaPago) %>% 
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date, 
+             y = value,
+             colour = key)) +
+    geom_line()
+```
 
-de todos los 
+Por un lado, tenemos que la *fecha de inicio* del crédito fue en enero 2015 y, durante ese año, el cliente fue aumentando su saldo de \$1,000 a \$100,000 pesos. Por otro lado, podemos ver que durante 2016 el cliente fue saldando su crédito hasta liquidarlo por completo en enero de 2017. 
 
-por complicaciones que no deben razones que no tienen que ver con Para todos los cortes históricos y. 
+En la misma figura se muestra el pago mínimo que el acreditado debía cubrir en cada corte. Cuando un cliente conoce el saldo y el monto a pagar de su crédito en una fecha de corte, este tiene que realizar sus pagos. Veamos distintos comportamientos de pago con ejemplos. 
 
-<fechaAbonos son NAs>
+**Ejemplo 1**
+Supongamos que el cliente $X$ debe pagar 1,000 pesos en el corte 1. Ya que los clientes pueden cubrir su monto a pagar en varios abonos, el cliente X hizo dos abonos:
 
-* **Ejemplo 1**
+* 250 pesos cuatro días antes de la fecha de pago 1, y 
+* 750 pesos dos días después de la fecha de pago 1. 
 
-El cliente X sabe que debe pagar 1,000 pesos en el corte 1. Los clientes pueden cubrir su monto a pagar en varios abonos, así que el cliente X hizo dos abonos: 250 pesos antes de la fecha de pago, y 750 pesos después de la fecha de pago pero antes de la fecha de corte 2. En la figura \<ref\> vemos representados estos movimientos.
+En la figura \<ref\> vemos representados estos movimientos. En este caso el 25% del pago fue puntual y el 75% impuntual. Además, de acuerdo con la definición de momento de pago de la sección \<ref\>, tenemos que el momento de pago del cliente $X$ en el corte 1 es de dos días.
 
-```{r, ej1, echo=FALSE, out.width="70%", fig.align="center", fig.cap="Pago impuntual"}
+```{r, ej1, echo=FALSE, out.width="80%", fig.align="center", fig.pos="H",  fig.cap="Comportamiento de Pago del Cliente X"}
 knitr::include_graphics("./images/ej_1.png")
 ```
 
-label_dias_despues_fechaPago_prom = 
-get_label_prom(dias_despues_fechaPago, ventana_predict = params$ventana_predict)
+**Ejemplo 2**
+El cliente $Y$ debía pagar 1,000 pesos en el corte 1, y 1500 pesos en el corte 2. En la figura \<ref\> tenemos los abonos del cliente $Y$. Como podemos ver tenemos que:
 
-label_impuntual_2 = (label_dias_despues_fechaPago_prom >= 2) * 1
+* El cliente cubrió su monto a pagar del corte 1 con un abono de 1,000 pesos siete días después de la fecha de pago 1. Así, el 100% de su pago fue impuntual y el momento de este pago es 7.
+* El cliente cubrió su monto a pagar del corte 2 con un abono de 750 pesos tres días después de la fecha de pago 2, y con otro abono de 750 pesos ocho días después de la fecha de pago 2. Así, el 50% del pago fue impuntual y el otro 50% fue de rescate. El momento de pago del cliente $Y$ en el corte 2 es de 8 días.
 
-get_label_prom <- function(
-  x, 
-  ventana_predict
-) {
-  lag.xts(rollmean(x, 
-                   k = ventana_predict, 
-                   na.pad = TRUE, 
-                   align = 'left'), 
-          k = -1)
-}
+```{r, ej2, echo=FALSE, out.width="80%", fig.align="center", fig.pos="H", fig.cap="Comportamiento de Pago del Cliente Y"}
+knitr::include_graphics("./images/ej_2.png")
+```
+
+A continuación veamos en gráficas de series de tiempo la puntualidad de pago de un cliente real.
+
+En la figura \<ref\> en el recuadro superior vemos el mínimo a pagar y los abonos puntuales, impuntuales o de rescate que hizo un cliente a lo largo del tiempo. En el recuadro inferior tenemos la representación de la puntualidad de estos mismos pagos en valores porcentuales.
 
 
-![](images/movs_2.png)
+<!-- ```{r} -->
+<!-- ejemplos <- creditos %>% -->
+<!--   filter(indice_ultimo_saldo >= 40, -->
+<!--          indice_ultimo_saldo <= 50) %>% -->
+<!--   group_by(pkcolocadora) %>% -->
+<!--   summarise(min_saldo = min(saldo_prom_decay), -->
+<!--             max_saldo = max(saldo_prom_decay), -->
+<!--             diff_saldo = max_saldo - min_saldo) %>% -->
+<!--   ungroup() %>% -->
+<!--   filter(diff_saldo >= 50000) %>% -->
+<!--   pull(pkcolocadora) -->
 
-En el ejemplo de la figura \<ref\> el cliente hizo algunos movimientos antes de la fecha de pago pero terminó de cubrir el monto a pagar después de esa fecha. En este caso la fecha de abono se encuentra entre la fecha de pago y la fecha de corte del siguiente periodo.
+<!-- for(colocadora_ej in ejemplos[600:620]){ -->
+<!--   p <- creditos %>% -->
+<!--     filter(pkcolocadora == colocadora_ej) %>% -->
+<!--     select(fechaCorte, -->
+<!--          minimoPagar, -->
+<!--          puntual,  -->
+<!--          impuntual,  -->
+<!--          rescate) %>% -->
+<!--     rename(date = fechaCorte) %>% -->
+<!--    gather(key, value,-date) %>% -->
+<!--    ggplot(aes(x = date, -->
+<!--              y = value, -->
+<!--              colour = key)) + -->
+<!--     geom_line() + -->
+<!--     labs(title = colocadora_ej) -->
+<!--   print(p) -->
+<!-- } -->
 
-* **Ejemplo 3**
-
-![](images/movs_3.png)
-
-En este último ejemplo tenemos que los abonos del periodo son impuntuales y de rescate, y la fecha de abono ocurre después de la fecha de corte del siguiente periodo.
-
-Nos hemos familiarizado con los términos fecha de corte, fecha de pago, fecha de abono; también ahora entendemos qué significa que un abono o movimiento sea puntual, impuntual o de rescate. Finalmente, de forma similar, clasificaremos pagos de corte en función de la fecha de abono:
-
-* **Pago puntual** si la fecha de abono se encuentra antes de la fecha de pago
-* **Pago impuntual** si la fecha de abono se encuentra después de la fecha de pago y antes de la fecha de corte del siguiente periodo
-* **Pago en rescate** si no se cubrió el monto a pagar antes de la fecha de corte del siguiente período. Cuando un cliente deja de pagar definitavamente, el cliente está *en rescate* o cayó en *default*.
-
-< falta incluir definición de alto riesgo >
-
-Este será el lingo que usaremos de aquí en adelante.
-
-
-
-
-
-
-
-
-
-; autorizar el proyecto de desarrollo del modelo requería identificar mecanismos de validación. 
-
-E
-
-A continuación presentaremos las métricas de desempeño del modelo base y del modelo nulo que el indicador de impuntualidad debía superar.
+<!-- ``` -->
 
 
-debía superar para que pudiera incorporarse a los procesos del Banco.
+```{r, puntualidad, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Puntualidad de Pago de un Cliente"}
+colocadora_ej = 37082
+  
+plot1 <- creditos %>% 
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaCorte,
+         minimoPagar,
+         puntual, 
+         impuntual, 
+         rescate) %>% 
+  rename(date = fechaCorte) %>% 
+  gather(key, value,-date) %>% 
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) + 
+  geom_line()
 
-A continuación explicamos como se construyó la variable de salida.
+plot2 <- creditos %>% 
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaCorte,
+         porc_puntual,
+         porc_impuntual, 
+         porc_rescate) %>% 
+  rename(date = fechaCorte) %>% 
+  gather(key, value,-date) %>% 
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) + 
+  geom_line()
 
-Es indispensable contar con labeled data para usar un modelos supervisado. ,   labels
+grid.arrange(plot1, plot2, nrow=2)
+```
 
-## Modelo Base y Modelo Nulo
+En este ejemplo tenemos que el cliente hizo pagos puntuales en la primer mitad del año 2017. A partir de julio 2017 el cliente empieza a hacer pagos impuntuales más frecuentemente. Finalmente, en 2018 el cliente se atrasa aún más en sus pagos y  en varios cortes realiza pagos en rescate.
 
-## EDA y Feature Engineering 
+En la figura \<ref\> se muestran los momentos de pago del mismo cliente. De esta forma:
 
+* en los primeros dos cortes el momento de pago es negativo pues el cliente cubrió su mínimo a pagar unos días antes de la fecha de pago, 
+* el momento de pago es cero cuando el cliente cubrió su mínimo a pagar justo en la fecha de pago, y 
+* cuando el cliente hace pagos de rescate, el momento de pago alcanza valores mayores a 10 .
+
+```{r, momento, echo=FALSE, out.width="70%", fig.align="center", fig.cap="Momento de Pago de un Cliente"}
+creditos %>% 
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaCorte,
+         dias_despues_fechaPago) %>% 
+  rename(date = fechaCorte) %>% 
+  gather(key, value,-date) %>% 
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) + 
+  geom_line()
+```
+
+
+## Limpieza de datos
+
+Probablemente el lector ya se ha preguntado si el Banco registra los datos en el formato necesario para visualizar las historias de crédito de sus clientes como en las figuras \<ref\> y \<ref\>. La respuesta es -no realmente-.
+
+El Banco almacena la mayor parte de su información en una base de datos relacional. Esta base contiene casi xxx tablas. Los encargados de la base recomendaron a los científicos de datos qué tablas explorar para poder construir las historias de crédito de sus clientes. Los científicos de datos utilizaron principalmente dos tablas: 
+
+* **tabla de saldos** - tabla en la que se registran saldos y mínimo a pagar de los clientes en cada corte, y
+* **tabla de transacciones de pago** - tabla en la que se registran todos los movimientos de pago de los clientes.
+
+Uno de los retos principales para los científicos de datos en este proyecto fue limpiar y unir las tablas para obtener historias de crédito congruentes. A continuación se describen algunas de las decisiones que se tomaron en la limpieza de datos. 
+
+**Fechas de inicio de las tablas que contienen datos históricos**
+
+Ya que el esquema de las bases de datos del Banco ha cambiado conforme el negocio crece, se tiene que la fecha de inicio de las tablas no es la misma. La fecha de inicio de la tabla de saldos es Mayo 2013 y la fecha de inicio de la tabla de transacciones de pago es xxx. Con esto, la fecha de inicio de la **tabla de historias de crédito** que construyó el equipo de científicos de datos es xxx.
+
+**Períodos activos de los clientes**
+
+Ya que las tablas de saldos y de transacciones de pago no tienen registros previos a xxx, para identificar fechas de activación de clientes previas a Mayo 2013 se recurrió a otra tabla legacy. Con esto, se pudo calcular adecauadamente la antigüedad de los clientes.
+
+**Secuencia de estampas de tiempo**
+
+En algunos casos, la secuencia en una historia de crédito tenía datos faltantes. En lugar de imputar pagos, se decidió eliminar la estampa de tiempo en la historia del cliente cuando sólo faltaba una estampa de forma consecutiva. Cuando se tenían datos faltantes en dos o más estampas consecutivas se decidió asignarle una bandera al cliente y avisarle al Banco que no se podría generar una predicción para ese cliente. 
+
+Existen clientes que dejaron de tener actividad crediticia por periodos de más de un año. En estos casos se decidió ignorar el pasado de los cliente y considerarlos como nuevos clientes a partir de la fecha en la que volvieron a estar activos. Además, se consideraron como inactivos a los clientes que mantenía un saldo negativo o un saldo menor de 1,000 pesos en varios periodos consecutivos. 
+
+**Clasificación de abonos**
+
+La tabla de movimientos contiene registros de transacciones pero no contiene una columna en la que se clasifiquen los abonos en puntuales, impuntuales o de rescate. El primer procedimiento que se desarrolló para clasificar los abonos de cada cliente en cada corte tardaba 24 horas. Después de optimizar el uso de memoria, este procedimiento se mejoró y la última versión tarda a lo más 2 minutos. 
+
+**Liquidaciones**
+
+En muchas ocasiones el mínimo abonado y el mínimo a pagar de los clientes no coinciden al centavo. Así el porcentaje pagado no siempre suma 100% como se ve en la figura \<ref\>. Por otro lado, un cliente puede querer liquidar antes su deuda haciendo pagos que exceden el mínimo a pagar. En estos casos se decidió acotar el valor máximo del porcentaje puntual, impuntual y de rescate a 1.5.  
