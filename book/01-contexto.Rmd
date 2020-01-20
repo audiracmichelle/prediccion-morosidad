@@ -42,11 +42,11 @@ Previo a iniciar el proyecto, el Banco asegura haber observado una tendencia asc
 
 Para conocer los cambios de estrategia que hizo el Banco, primero hay que entender el calendario de pagos que utiliza. Como en cualquier crédito revolvente, cada inicio de *corte* se determina el *monto a pagar* de cada cliente y la *fecha de pago* es la fecha límite en la que los clientes deben cubrir el monto que les corresponde. Un pago lo entendemos como un par de datos dado por (fecha de corte, monto a pagar).
 
-Las fechas de corte de los créditos del Banco son quincenales y regularmente caen el 8 de cada mes para pagar el 18, y el 23 para pagar el 3 del siguiente mes. Así el calendario de fechas de corte y pago lo podemos representar en una línea de tiempo como en la figura \@ref(fig:calendario).
-
-```{r, calendario, fig.cap="Representación de fechas de corte y fechas de pago", echo=FALSE, out.width="70%", fig.align="center"}
+```{r, calendario, fig.pos="H", fig.cap="Representación de fechas de corte y fechas de pago", echo=FALSE, out.width="70%", fig.align="center"}
 knitr::include_graphics("./images/calendario.png")
 ```
+
+Las fechas de corte de los créditos del Banco son quincenales y regularmente caen el 8 de cada mes para pagar el 18, y el 23 para pagar el 3 del siguiente mes. Así el calendario de fechas de corte y pago lo podemos representar en una línea de tiempo como en la figura \@ref(fig:calendario).
 
 La *cobranza preventiva* se refiere a aquellas acciones que se realizan antes de la fecha límite de pago para recordar a los acreditados que realicen sus pagos. La *cobranza correctiva* son las acciones que se disparan después de la fecha de pago para dar seguimiento a los clientes que no cubrieron su monto correspondiente. Créditos con 90 días vencidos pasan a quebranto.
 
@@ -64,7 +64,7 @@ Los clientes pueden cubrir su monto a pagar en una sola exhibición o en varios 
 
 En la figura \@ref(fig:clasificacion) se esquematiza la clasificación de pagos en una línea de tiempo.
 
-```{r, clasificacion, echo=FALSE, out.width="70%", fig.align="center", fig.cap="Clasificación de pagos"}
+```{r, clasificacion, fig.pos="H", echo=FALSE, out.width="70%", fig.align="center", fig.cap="Clasificación de pagos"}
 knitr::include_graphics("./images/clasificacion_pagos.png")
 ```
 
@@ -72,7 +72,7 @@ El equipo de científicos de datos propuso construir un producto de datos que ge
 
 Considerando datos históricos, cálculamos el número de días que se aleja la fecha de abono de la fecha de pago. A esta diferencia la llamamos el *momento de pago*. Así los momentos de pago menores o iguales a cero representan pagos puntuales y los mayores a cero pagos impuntuales. En la figura \@ref(fig:triangulo) tenemos la distribución de los momentos de pago acotados entre -7 y 20.  El Banco se refiere a esta distribución como el *triángulo de pagos*. Como vemos los clientes prefieren pagar un día antes de la fecha de pago, es decir la moda del momento de pago es -1.
 
-```{r, triangulo, fig.cap="Triángulo", echo=FALSE, fig.cap="Triángulo de pagos", fig.align="center"}
+```{r, triangulo, out.width="70%", fig.pos="H", fig.cap="Triángulo", echo=FALSE, fig.cap="Triángulo de pagos", fig.align="center"}
 creditos %>% 
   mutate(triangulo = if_else(dias_despues_fechaPago_prom_decay > 20, 20, dias_despues_fechaPago_prom_decay), 
          triangulo = if_else(triangulo < -7, -7, triangulo), 
@@ -123,11 +123,14 @@ Al contar con estos valores de referencia se estableció que para ponerse en pro
 
 ## Plan de Trabajo
 
-El entregable del proyecto consiste en un pipeline de datos que permite actualizar cada quincena los últimos movimientos de los clientes y producir los indicadores o predicciones correspondientes. Con esto en mente, el plan de trabajo que los científicos de datos siguieron fue: 
+El entregable del proyecto consistía en un pipeline de datos para actualizar cada quincena los últimos movimientos de los clientes y producir predicciones. Con esto en mente, el plan de trabajo que los científicos de datos siguieron fue: 
 
 1. **EDA** se dio sentido a los datos transaccionales para que reflejaran las historias de crédito de los clientes. Para esto, se trabajó con los dueños de los datos del Banco. La limpieza de datos fue extensiva y se incorporó al pipeline una tarea que identifica, limpia y lista errores cada vez que se actualizan los datos.
+
 2. **Feature engineering** se transformaron todas las variables explicativas para que capturaran el comportamiento pasado de los acreditados usando *promedios móviles con decaimiento exponencial*.
+
 3. **Model selection** se probaron distintos modelos de clasificación y se determinaron los mejores hiperparámetros, entre ellos el *halflife* del decaimiento exponencial.
+
 4. **Code refactoring** se factorizó el código y se crearon contenedores para cada una de las tareas del pipeline.
 
 Además, se trabajó con ingenieros de datos que estuvieron encargados del **ETL** y del **pipeline testing**. Para el ETL se desarrollaron los procesos de extracción de datos que alimentan al resto de las tareas. Durante el pipeline testing se validaron los resultados que produce el pipeline y se probó con el Banco el funcionamiento de la entrega.

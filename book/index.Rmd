@@ -37,7 +37,12 @@ description: "En este reporte se presenta un estudio de caso en el que se aplica
 library(feather)
 library(tidyverse)
 library(mltools)
+library(gridExtra)
 
 creditos <- read_feather('../pipeline/wrangle_train/output/collapse_train_20180823_prod.feather')
+design_matrix <- read_feather('../pipeline/preprocess/output/design_matrix_20180823_prod.feather')
 ```
 
+# Introducción
+
+instalar gridExtra en Docker

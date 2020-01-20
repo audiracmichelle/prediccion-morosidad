@@ -1,0 +1,391 @@
+<!-- # Literature -->
+
+<!-- Here is a review of existing methods. -->
+
+# Proyecto
+
+## Historias de Crédito
+
+Para poder analizar un portafolio de crédito, debemos entender que un crédito cuenta una historia Podemos pensar en una historia de crédito como un conjunto de series de tiempo -saldos, pagos- que corresponden a un acreditado. En la figura \@ref(fig:saldos) tenemos el saldo de un crédito en el tiempo. Veamos qué nos puede decir la serie de tiempo del saldo sobre este crédito. 
+
+<!-- ```{r} -->
+<!-- ejemplos <- creditos %>%  -->
+<!--   filter(indice_ultimo_saldo >= 40,  -->
+<!--          indice_ultimo_saldo <= 50,  -->
+<!--          max_fechaCorteDespues <= as.Date("2018-05-01")) %>%  -->
+<!--   group_by(pkcolocadora) %>%  -->
+<!--   summarise(min_saldo = min(saldo_prom_decay),  -->
+<!--             max_saldo = max(saldo_prom_decay),  -->
+<!--             diff_saldo = max_saldo - min_saldo,  -->
+<!--             label = max(label_impuntual_2)) %>%  -->
+<!--   ungroup() %>%  -->
+<!--   filter(diff_saldo >= 50000,  -->
+<!--          label == 0) %>%  -->
+<!--   pull(pkcolocadora) -->
+
+<!-- for(colocadora_ej in ejemplos){ -->
+<!--   p <- creditos %>% -->
+<!--     filter(pkcolocadora == colocadora_ej) %>% -->
+<!--     select(fechaCorte,  -->
+<!--          saldoActual,  -->
+<!--          saldo_prom_decay,  -->
+<!--          minimoPagar,  -->
+<!--          puntual) %>%  -->
+<!--     rename(date = fechaCorte) %>%  -->
+<!--    gather(key, value,-date) %>% -->
+<!--    ggplot(aes(x = date,  -->
+<!--              y = value, -->
+<!--              colour = key)) +  -->
+<!--     geom_line() +  -->
+<!--     labs(title = colocadora_ej) -->
+<!--   print(p) -->
+<!-- } -->
+<!-- ``` -->
+
+
+```{r, saldos, echo=FALSE, out.width="80%", fig.pos="H", fig.align="center", fig.cap="Saldo y mínimo a pagar de un cliente"}
+colocadora_ej <- 21160
+
+design_matrix %>%
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaPago, 
+         saldoActual,
+         minimoPagar) %>% 
+  rename(date = fechaPago) %>% 
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date, 
+             y = value,
+             colour = key)) +
+    geom_line()
+```
+
+Por un lado, tenemos que la *fecha de inicio* del crédito fue en enero 2015 y, durante ese año, el cliente fue aumentando su saldo de \$1,000 a \$100,000 pesos. Por otro lado, podemos ver que durante 2016 el cliente fue saldando su crédito hasta liquidarlo por completo en enero de 2017. 
+
+En la misma figura se muestra el pago mínimo que el acreditado debía cubrir en cada corte. Cuando un cliente conoce el saldo y el monto a pagar de su crédito en una fecha de corte, este tiene que realizar sus pagos. Veamos distintos comportamientos de pago con ejemplos. 
+
+**Ejemplo 1**
+Supongamos que el cliente $X$ debe pagar 1,000 pesos en el corte 1. Ya que los clientes pueden cubrir su monto a pagar en varios abonos, el cliente X hizo dos abonos:
+
+* 250 pesos cuatro días antes de la fecha de pago 1, y 
+* 750 pesos dos días después de la fecha de pago 1. 
+
+En la figura \@ref(fig:ej1) vemos representados estos movimientos. En este caso el 25% del pago fue puntual y el 75% impuntual. Además, de acuerdo con la definición de momento de pago de la sección \<ref\>, tenemos que el momento de pago del cliente $X$ en el corte 1 es de dos días.
+
+```{r, ej1, echo=FALSE, out.width="80%", fig.align="center", fig.pos="H",  fig.cap="Comportamiento de pago del cliente X"}
+knitr::include_graphics("./images/ej_1.png")
+```
+
+**Ejemplo 2**
+El cliente $Y$ debía pagar 1,000 pesos en el corte 1, y 1500 pesos en el corte 2. En la figura \@ref(fig:ej2) tenemos los abonos del cliente $Y$. Podemos ver que:
+
+* El cliente cubrió su monto a pagar del corte 1 con un abono de 1,000 pesos siete días después de la fecha de pago 1. Así, el 100% de su pago fue impuntual y el momento de este pago es 7.
+* El cliente cubrió su monto a pagar del corte 2 con un abono de 750 pesos tres días después de la fecha de pago 2, y con otro abono de 750 pesos ocho días después de la fecha de pago 2. Así, el 50% del pago fue impuntual y el otro 50% fue de rescate. El momento de pago del cliente $Y$ en el corte 2 es de 8 días.
+
+```{r, ej2, echo=FALSE, out.width="80%", fig.align="center", fig.pos="H", fig.cap="Comportamiento de pago del cliente Y"}
+knitr::include_graphics("./images/ej_2.png")
+```
+
+A continuación veamos en gráficas de series de tiempo la puntualidad de pago de un cliente real.
+
+En la figura \@ref(fig:pagos) en el recuadro superior vemos el mínimo a pagar y los abonos puntuales, impuntuales o de rescate que hizo un cliente a lo largo del tiempo. En el recuadro inferior tenemos la representación de la puntualidad de estos pagos en valores porcentuales.
+
+
+<!-- ```{r} -->
+<!-- ejemplos <- creditos %>% -->
+<!--   filter(indice_ultimo_saldo >= 40, -->
+<!--          indice_ultimo_saldo <= 50) %>% -->
+<!--   group_by(pkcolocadora) %>% -->
+<!--   summarise(min_saldo = min(saldo_prom_decay), -->
+<!--             max_saldo = max(saldo_prom_decay), -->
+<!--             diff_saldo = max_saldo - min_saldo) %>% -->
+<!--   ungroup() %>% -->
+<!--   filter(diff_saldo >= 50000) %>% -->
+<!--   pull(pkcolocadora) -->
+
+<!-- for(colocadora_ej in ejemplos[600:620]){ -->
+<!--   p <- creditos %>% -->
+<!--     filter(pkcolocadora == colocadora_ej) %>% -->
+<!--     select(fechaCorte, -->
+<!--          minimoPagar, -->
+<!--          puntual,  -->
+<!--          impuntual,  -->
+<!--          rescate) %>% -->
+<!--     rename(date = fechaCorte) %>% -->
+<!--    gather(key, value,-date) %>% -->
+<!--    ggplot(aes(x = date, -->
+<!--              y = value, -->
+<!--              colour = key)) + -->
+<!--     geom_line() + -->
+<!--     labs(title = colocadora_ej) -->
+<!--   print(p) -->
+<!-- } -->
+
+<!-- ``` -->
+
+
+```{r, pagos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Puntualidad de pago de un cliente"}
+colocadora_ej = 37082
+  
+plot1 <- creditos %>% 
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaCorte,
+         minimoPagar,
+         puntual, 
+         impuntual, 
+         rescate) %>% 
+  rename(date = fechaCorte) %>% 
+  gather(key, value,-date) %>% 
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) + 
+  geom_line()
+
+plot2 <- creditos %>% 
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaCorte,
+         porc_puntual,
+         porc_impuntual, 
+         porc_rescate) %>% 
+  rename(date = fechaCorte) %>% 
+  gather(key, value,-date) %>% 
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) + 
+  geom_line()
+
+grid.arrange(plot1, plot2, nrow=2)
+```
+
+En este ejemplo tenemos que el cliente hizo pagos puntuales en la primer mitad del año 2017. A partir de julio 2017 el cliente empieza a hacer pagos impuntuales más frecuentemente. En 2018 el cliente se atrasa frecuentemente en sus pagos y en varios cortes realiza pagos de rescate. Finalmente, en la figura se puede apreciar que el porcentaje pagado no siempre suma 100%; esto se explica en la siguiente sección.
+
+<!-- En la figura \<ref\> se muestran los momentos de pago del mismo cliente. De esta forma: -->
+
+<!-- * en los primeros dos cortes el momento de pago es negativo pues el cliente cubrió su mínimo a pagar unos días antes de la fecha de pago,  -->
+<!-- * el momento de pago es cero cuando el cliente cubrió su mínimo a pagar justo en la fecha de pago, y  -->
+<!-- * cuando el cliente hace pagos de rescate, el momento de pago alcanza valores mayores a 10 . -->
+
+<!-- ```{r, momento, echo=FALSE, out.width="70%", fig.align="center", fig.cap="Momento de Pago de un Cliente"} -->
+<!-- creditos %>%  -->
+<!--   filter(pkcolocadora == colocadora_ej) %>% -->
+<!--   select(fechaCorte, -->
+<!--          dias_despues_fechaPago) %>%  -->
+<!--   rename(date = fechaCorte) %>%  -->
+<!--   gather(key, value,-date) %>%  -->
+<!--   ggplot(aes(x = date, -->
+<!--              y = value, -->
+<!--              colour = key)) +  -->
+<!--   geom_line() -->
+<!-- ``` -->
+
+## Limpieza de datos
+
+Probablemente el lector ya se ha preguntado si el Banco registra los datos en el formato necesario para visualizar las historias de crédito de sus clientes como en las figuras \@ref(fig:saldos) y \@ref(fig:pagos). La respuesta es -no realmente-.
+
+El Banco almacena la mayor parte de su información en una base de datos relacional. Esta base contiene casi 1,109 tablas. Los encargados de la base recomendaron a los científicos de datos qué tablas explorar para poder construir las historias de crédito de sus clientes. Los científicos de datos utilizaron principalmente dos tablas: 
+
+* **tabla de saldos** - tabla en la que se registran saldos y mínimo a pagar de los clientes en cada corte, y
+* **tabla de transacciones de pago** - tabla en la que se registran todos los movimientos de pago de los clientes.
+
+Uno de los retos principales para los científicos de datos en este proyecto fue limpiar y unir las tablas para obtener historias de crédito congruentes. A continuación se describen algunas de las decisiones que se tomaron en la limpieza de datos. 
+
+**Fechas de inicio de las tablas que contienen datos históricos**
+
+Ya que el esquema de las bases de datos del Banco ha cambiado conforme el negocio crece, se tiene que la fecha de inicio de las tablas no es la misma. La fecha de inicio de la tabla de saldos es noviembre 2008 y la fecha de inicio de la tabla de transacciones de pago es febrero 2013. Con esto, la fecha de inicio de la **tabla de historias de crédito** que construyó el equipo de científicos de datos es febrero 2013.
+
+**Períodos activos de los clientes**
+
+Ya que las tablas de saldos y de transacciones de pago no tienen registros antes de febrero 2013, para identificar fechas de activación de clientes previas a esta fecha se recurrió a otra tabla legacy. La fecha de activación de los clientes era necesaria para calcular adecuadamente la antigüedad de los clientes.
+
+**Secuencia de estampas de tiempo**
+
+En algunos casos, la secuencia en una historia de crédito tenía datos faltantes. En lugar de imputar pagos, se decidió eliminar la estampa de tiempo en la historia del cliente cuando sólo faltaba una estampa de forma consecutiva. Cuando se tenían datos faltantes en dos o más estampas consecutivas se decidió asignarle una bandera al cliente y avisarle al Banco que no se podría generar una predicción para ese cliente. 
+
+Existen clientes que dejaron de tener actividad crediticia por periodos de más de un año. En estos casos se decidió ignorar el pasado de los cliente y considerarlos como nuevos clientes a partir de la fecha en la que volvieron a estar activos. Además, se consideraron como inactivos a los clientes que mantenía un saldo negativo o un saldo menor de 1,000 pesos en varios periodos consecutivos. 
+
+**Clasificación de abonos**
+
+La tabla de movimientos contiene registros de transacciones pero no contiene una columna en la que se clasifiquen los abonos en puntuales, impuntuales o de rescate. El primer procedimiento que se desarrolló para clasificar los abonos de cada cliente en cada corte tardaba 24 horas. Después de optimizar el uso de memoria, este procedimiento se mejoró y la última versión tarda a lo más dos minutos. 
+
+**Liquidaciones**
+
+En muchas ocasiones el mínimo abonado y el mínimo a pagar de los clientes no coinciden al centavo. Esto simplemente significa que los clientes normalmente redondean el monto a pagar por comodidad. Por otro lado, un cliente puede querer liquidar antes su deuda haciendo pagos que exceden el mínimo a pagar. En estos casos se decidió acotar el valor máximo del porcentaje puntual, impuntual y de rescate a 1.5.  
+
+## Feature Engineering
+
+Las series de tiempo de personas con buen historial crediticio comparten ciertos patrones, lo mismo ocurre con personas impuntuales. Debemos diseñar variables para que los modelos supervisados identifiquen dichos patrones.
+
+Hasta este momento, se conoce el comportamiento o características de cada crédito en una fecha de corte específico. En el ejemplo en la figura \@ref(fig:ej1) sabemos que el cliente $X$ pagó el 75% puntual y el 25% impuntual en el corte 1, pero esa información no nos aporta información del comportamiento de pago del cliente $X$ en el pasado: ¿esta es la primera vez que hizo un pago impuntual,o suele hacer pagos impuntuales frecuentemente?
+
+Para absorber información del comportamiento anterior de los clientes, es posible usar promedios históricos. Un inconveniente al usar el promedio aritmético es que el pasado lejano pesa igual que la historia reciente. Para evitar este problema, podemos usar una función de decaimiento para obtener promedios ponderado que le asignen más peso a la historia reciente.
+
+Existen muchos métodos para obtener series de pesos con **decaimiento** que sumen uno. Algunos métodos obtienen pesos que decaen demasiado rápido, como el decaimiento exponencial. El **half-life** es un concepto que ayuda a controlar que tan rápido deben decaer el tamaño de los pesos.
+
+Un **half-life se alcanza cuando se acumula la mitad de la suma de los pesos**. En nuestro contexto el decaimiento ocurre de lo más reciente a
+lo más lejano. Por ejemplo, un half-life de 3 meses implica que:
+
+-   los pesos asignados en los tres meses más recientes acumulan
+    aproximadamente 0.5, y
+-   los pesos para el resto de la serie acumulan aproximadamente 0.5.
+
+De esta manera, series de pesos con un half-life de tres meses decaen
+más rápido que series de pesos con un half-life de un año.
+
+En el \<Anexo\> se incluye el detalle teórico del decaimiento
+geométrico.
+
+Utilizamos decaimiento con half-life en las series de tiempo de saldo y de porcentaje puntual, impuntual y rescate de los clientes. La figura \@ref(fig:decaimiento) muestra una serie de saldos suavizados con un half-life de tres meses. Como se observa, el decaimiento no solo incorpora la información del pasado en cada momento, también elimina el ruido en la serie. Es decir, los picos o registros atípicos son suavizados por el decaimiento.
+
+<!-- ```{r} -->
+<!-- ejemplos <- creditos %>% -->
+<!--   filter(indice_ultimo_saldo >= 50) %>% -->
+<!--   group_by(pkcolocadora) %>% -->
+<!--   summarise(min_saldo = min(saldo_prom_decay), -->
+<!--             max_saldo = max(saldo_prom_decay), -->
+<!--             diff_saldo = max_saldo - min_saldo) %>% -->
+<!--   ungroup() %>% -->
+<!--   filter(diff_saldo >= 50000) %>% -->
+<!--   pull(pkcolocadora) -->
+
+<!-- for(colocadora_ej in ejemplos[5000:5020]){ -->
+<!--   p <- creditos %>% -->
+<!--     filter(pkcolocadora == colocadora_ej) %>% -->
+<!--     select(fechaCorte, -->
+<!--          saldoActual,  -->
+<!--          saldo_prom_decay) %>% -->
+<!--     rename(date = fechaCorte) %>% -->
+<!--    gather(key, value,-date) %>% -->
+<!--    ggplot(aes(x = date, -->
+<!--              y = value, -->
+<!--              colour = key)) + -->
+<!--     geom_line() + -->
+<!--     labs(title = colocadora_ej) -->
+<!--   print(p) -->
+<!-- } -->
+
+<!-- ``` -->
+
+```{r, decaimiento, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Decaimiento con half-life de tres meses"}
+
+colocadora_ej = 15691
+
+creditos %>% 
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaCorte,
+         saldoActual, 
+         saldo_prom_decay) %>% 
+  rename(date = fechaCorte) %>% 
+  gather(key, value,-date) %>% 
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) + 
+  geom_line()
+```
+
+Se construyeron series de tiempo adicionales para capturar la magnitud de los cambios y la volatilidad en los saldos y pagos de los clientes. En el \<Anexo\> se describe la construcción de estas variables.
+
+<!-- ```{r} -->
+<!-- ejemplos <- creditos %>% -->
+<!--   filter(indice_ultimo_saldo >= 50) %>% -->
+<!--   group_by(pkcolocadora) %>% -->
+<!--   summarise(min_saldo = min(saldo_prom_decay), -->
+<!--             max_saldo = max(saldo_prom_decay), -->
+<!--             diff_saldo = max_saldo - min_saldo) %>% -->
+<!--   ungroup() %>% -->
+<!--   filter(diff_saldo >= 50000) %>% -->
+<!--   pull(pkcolocadora) -->
+
+<!-- for(colocadora_ej in ejemplos[5000:5020]){ -->
+<!--   p <- creditos %>% -->
+<!--     filter(pkcolocadora == colocadora_ej) %>% -->
+<!--     select(fechaCorte, -->
+<!--          saldoActual,  -->
+<!--          saldo_prom_decay) %>% -->
+<!--     rename(date = fechaCorte) %>% -->
+<!--    gather(key, value,-date) %>% -->
+<!--    ggplot(aes(x = date, -->
+<!--              y = value, -->
+<!--              colour = key)) + -->
+<!--     geom_line() + -->
+<!--     labs(title = colocadora_ej) -->
+<!--   print(p) -->
+<!-- } -->
+
+# Anexo
+
+## Decaimento Geométrico
+
+Aquí presentaremos un método para obtener series diarias de pesos monotónicos decrecientes con un half-life de $m$ días. Esto significa que buscamos una serie $w = (w^T, w^{T-1}, \dots, w^1)$ de pesos diarios tal que $w^t \geq w^{t-1}$, $\sum w^t = 1$ y que además se cumplan dos condiciones:
+
+* $\sum^T_{k=m} w^k \leq 1/2$ 
+* $\sum^m_{k=1} w^k \leq 1/2$
+
+Para esto **nos basaremos en una distribución geométrica** en donde $X$ que es el número de fracasos antes del primer éxito con soporte en $\{1, 2, 3, \ldots\}$. Si $X\sim\text{Geom}(p)$ entonces $\Pr[X = k] = p(1-p)^{k-1}$ y la probabilidad acumulada hasta $x$ está dada por $\sum^x_{k=1}\Pr[X=k]$. Usando la serie geométrica tenemos que
+
+$$
+\begin{aligned}
+\sum^x_{k=1}\Pr[X=k] & =
+\sum^x_{k=1}p(1-p)^{k-1} \\
+ &= p\sum^{x-1}_{k=0}(1-p)^k \\
+ &= p\frac{1-(1-p)^x}{1-(1-p)}=
+1-(1-p)^x
+\end{aligned}
+$$
+
+Dado un half-life $m$, contruyamos una variable aleatoria $Y$ que tiene distribución geométrica truncada y cuya mediana es $m$: 
+
+* Si $Y$ tiene una distribución geométrica truncada, entonces tiene soporte finito $\{1, 2, 3, \ldots, T\}$ y su función de probabilidad es $\Pr[Y = k] = \Pr[X=k|X \leq T] = \frac{1}{C}\Pr[X=k]$ donde $C=\sum^T_{k=1}\Pr[X=k]$. Esto es
+
+$$
+\begin{aligned}
+\Pr[Y=k] & = \Pr[X=k|X \leq T] \\
+& = \frac{\Pr[X=k]}{\sum^T_{k=1}\Pr[X=k]} & \\
+& = \frac{p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}}  = 
+\frac{p(1-p)^{k-1}}{1-(1-p)^T}
+\end{aligned}
+$$
+
+* Si la mediana de $Y$ es $m$, entonces buscamos aquella $p$ que cumpla que $\sum^m_{k=1}\Pr[Y=k] = 1/2$. Esto es
+
+
+$$
+\begin{aligned}
+\sum^m_{k=1}\Pr[Y=k] & = \frac{1}{C}\sum^m_{k=1}\Pr[X=k] \\
+& = \frac{\sum^m_{k=1}p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}} \\
+& = \frac{\sum^{m-1}_{k=0}(1-p)^k}{\sum^{T-1}_{k=0}(1-p)^k} =
+\frac{1-(1-p)^m}{1-(1-p)^T}= 1/2
+\end{aligned}
+$$
+
+No existe una solución analítica para $p$, pero podemos obtener soluciones numéricas; existirá una solución siempre y cuando $m\in (0,T/2)$, con $p \to 0$ si $m\to T/2$ y $p\to 1$ si $m\to 0$. 
+ 
+Supongamos que tenemos $T = 1000$ y $m = 45$, **¿bajo qué $p$ la distribución de $Y$ acumula $0.5$ en $m$?** La solución es $p=0.0153$ como se muestra en la \@ref(fig:pesos).
+
+```{r, pesos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="La solución p"}
+T = 1000
+m = 45
+
+median_p <- function(p) (1-(1-p)^m) / (1-(1-p)^T) - 0.5
+s <- uniroot(median_p, c(0.000001,0.999999))
+p <- s$root
+
+pseq = seq(0.000001, 0.999999, length.out = 1000)
+plot(pseq, median_p(pseq), type = "l")
+abline(h = 0.0)
+abline(v = p, col = "red")
+```
+
+Con esto, proponemos la serie de pesos $w$ tal que
+
+* $w^T \rightarrow \Pr[Y = 1]$
+* $w^{T-1} \rightarrow \Pr[Y = 2]$
+* $\vdots$
+* $w^1 \rightarrow \Pr[Y = T]$
+
+En la figura \@ref(fig:geometricos) se muestra la serie de pesos con decaimento geométrico con $T = 1000$ y $m = 45$. La línea vertical se encuentra sobre el half-life $m$ donde se acumula el 50% de los pesos.
+
+```{r, geometricos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Ejemplo con T = 1000 y m = 45"}
+k <- 1:T
+w <- p * (1-p)^{k-1} / (1-(1-p)^T)
+plot(w, type = 'l')
+abline(v=m, col = "red")
+```
