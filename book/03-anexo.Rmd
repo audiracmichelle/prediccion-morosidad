@@ -1,0 +1,83 @@
+<!-- # Methods -->
+
+<!-- We describe our methods in this chapter. -->
+
+# Anexo
+
+## Decaimento Geométrico
+
+Aquí presentaremos un método para obtener series diarias de pesos monotónicos decrecientes con un half-life de $m$ días. Esto significa que buscamos una serie $w = (w^T, w^{T-1}, \dots, w^1)$ de pesos diarios tal que $w^t \geq w^{t-1}$, $\sum w^t = 1$ y que además se cumplan dos condiciones:
+
+* $\sum^T_{k=m} w^k \leq 1/2$ 
+* $\sum^m_{k=1} w^k \leq 1/2$
+
+Para esto **nos basaremos en una distribución geométrica** en donde $X$ que es el número de fracasos antes del primer éxito con soporte en $\{1, 2, 3, \ldots\}$. Si $X\sim\text{Geom}(p)$ entonces $\Pr[X = k] = p(1-p)^{k-1}$ y la probabilidad acumulada hasta $x$ está dada por $\sum^x_{k=1}\Pr[X=k]$. Usando la serie geométrica tenemos que
+
+$$
+\begin{aligned}
+\sum^x_{k=1}\Pr[X=k] & =
+\sum^x_{k=1}p(1-p)^{k-1} \\
+ &= p\sum^{x-1}_{k=0}(1-p)^k \\
+ &= p\frac{1-(1-p)^x}{1-(1-p)}=
+1-(1-p)^x
+\end{aligned}
+$$
+
+Dado un half-life $m$, contruyamos una variable aleatoria $Y$ que tiene distribución geométrica truncada y cuya mediana es $m$: 
+
+* Si $Y$ tiene una distribución geométrica truncada, entonces tiene soporte finito $\{1, 2, 3, \ldots, T\}$ y su función de probabilidad es $\Pr[Y = k] = \Pr[X=k|X \leq T] = \frac{1}{C}\Pr[X=k]$ donde $C=\sum^T_{k=1}\Pr[X=k]$. Esto es
+
+$$
+\begin{aligned}
+\Pr[Y=k] & = \Pr[X=k|X \leq T] \\
+& = \frac{\Pr[X=k]}{\sum^T_{k=1}\Pr[X=k]} & \\
+& = \frac{p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}}  = 
+\frac{p(1-p)^{k-1}}{1-(1-p)^T}
+\end{aligned}
+$$
+
+* Si la mediana de $Y$ es $m$, entonces buscamos aquella $p$ que cumpla que $\sum^m_{k=1}\Pr[Y=k] = 1/2$. Esto es
+
+
+$$
+\begin{aligned}
+\sum^m_{k=1}\Pr[Y=k] & = \frac{1}{C}\sum^m_{k=1}\Pr[X=k] \\
+& = \frac{\sum^m_{k=1}p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}} \\
+& = \frac{\sum^{m-1}_{k=0}(1-p)^k}{\sum^{T-1}_{k=0}(1-p)^k} =
+\frac{1-(1-p)^m}{1-(1-p)^T}= 1/2
+\end{aligned}
+$$
+
+No existe una solución analítica para $p$, pero podemos obtener soluciones numéricas; existirá una solución siempre y cuando $m\in (0,T/2)$, con $p \to 0$ si $m\to T/2$ y $p\to 1$ si $m\to 0$. 
+ 
+Supongamos que tenemos $T = 1000$ y $m = 45$, **¿bajo qué $p$ la distribución de $Y$ acumula $0.5$ en $m$?** La solución es $p=0.0153$ como se muestra en la \@ref(fig:pesos).
+
+```{r, pesos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="La solución p"}
+T = 1000
+m = 45
+
+median_p <- function(p) (1-(1-p)^m) / (1-(1-p)^T) - 0.5
+s <- uniroot(median_p, c(0.000001,0.999999))
+p <- s$root
+
+pseq = seq(0.000001, 0.999999, length.out = 1000)
+plot(pseq, median_p(pseq), type = "l")
+abline(h = 0.0)
+abline(v = p, col = "red")
+```
+
+Con esto, proponemos la serie de pesos $w$ tal que
+
+* $w^T \rightarrow \Pr[Y = 1]$
+* $w^{T-1} \rightarrow \Pr[Y = 2]$
+* $\vdots$
+* $w^1 \rightarrow \Pr[Y = T]$
+
+En la figura \@ref(fig:geometricos) se muestra la serie de pesos con decaimento geométrico con $T = 1000$ y $m = 45$. La línea vertical se encuentra sobre el half-life $m$ donde se acumula el 50% de los pesos.
+
+```{r, geometricos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Ejemplo con T = 1000 y m = 45"}
+k <- 1:T
+w <- p * (1-p)^{k-1} / (1-(1-p)^T)
+plot(w, type = 'l')
+abline(v=m, col = "red")
+```

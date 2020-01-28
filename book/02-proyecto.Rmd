@@ -6,7 +6,7 @@
 
 ## Historias de Crédito
 
-Para poder analizar un portafolio de crédito, debemos entender que un crédito cuenta una historia Podemos pensar en una historia de crédito como un conjunto de series de tiempo -saldos, pagos- que corresponden a un acreditado. En la figura \@ref(fig:saldos) tenemos el saldo de un crédito en el tiempo. Veamos qué nos puede decir la serie de tiempo del saldo sobre este crédito. 
+Para poder analizar un portafolio de crédito, debemos entender que un crédito cuenta una historia. Podemos pensar en una historia de crédito como un conjunto de series de tiempo -saldos, pagos- que corresponden a un acreditado. En la figura \@ref(fig:saldos) tenemos el saldo de un crédito en el tiempo. Veamos qué nos puede decir la serie de tiempo del saldo sobre este crédito. 
 
 <!-- ```{r} -->
 <!-- ejemplos <- creditos %>%  -->
@@ -214,26 +214,25 @@ En muchas ocasiones el mínimo abonado y el mínimo a pagar de los clientes no c
 
 Las series de tiempo de personas con buen historial crediticio comparten ciertos patrones, lo mismo ocurre con personas impuntuales. Debemos diseñar variables para que los modelos supervisados identifiquen dichos patrones.
 
-Hasta este momento, se conoce el comportamiento o características de cada crédito en una fecha de corte específico. En el ejemplo en la figura \@ref(fig:ej1) sabemos que el cliente $X$ pagó el 75% puntual y el 25% impuntual en el corte 1, pero esa información no nos aporta información del comportamiento de pago del cliente $X$ en el pasado: ¿esta es la primera vez que hizo un pago impuntual,o suele hacer pagos impuntuales frecuentemente?
+Hasta este momento, entendemos el comportamiento o características de cada crédito en una fecha de corte específico. En el ejemplo en la figura \@ref(fig:ej1) sabemos que el cliente $X$ pagó el 75% puntual y el 25% impuntual en el corte 1, pero esa información no nos aporta información del comportamiento de pago del cliente $X$ en el pasado: ¿esta es la primera vez que hizo un pago impuntual,o suele hacer pagos impuntuales frecuentemente?
 
-Para absorber información del comportamiento anterior de los clientes, es posible usar promedios históricos. Un inconveniente al usar el promedio aritmético es que el pasado lejano pesa igual que la historia reciente. Para evitar este problema, podemos usar una función de decaimiento para obtener promedios ponderado que le asignen más peso a la historia reciente.
+Se construyeron tres tipos de transformaciones que, a partir de las series de tiempo que conforman una historia de crédito, resumen el comportamiento pasado de un cliente. El primer tipo de transformación es un promedio ponderado que utiliza una función de decaimiento que permite asignar más peso a la historia reciente del cliente. Las otros dos transformaciones capturan la magnitud y la varianza de los cambios en las historias de crédito de los clientes. A continuación se describen a más detalle estas tres transformaciones.
 
-Existen muchos métodos para obtener series de pesos con **decaimiento** que sumen uno. Algunos métodos obtienen pesos que decaen demasiado rápido, como el decaimiento exponencial. El **half-life** es un concepto que ayuda a controlar que tan rápido deben decaer el tamaño de los pesos.
+### Promedios ponderados con half-life
 
-Un **half-life se alcanza cuando se acumula la mitad de la suma de los pesos**. En nuestro contexto el decaimiento ocurre de lo más reciente a
-lo más lejano. Por ejemplo, un half-life de 3 meses implica que:
+Existen muchos métodos para obtener series de pesos con **decaimiento** que sumen uno. Con algunos métodos se obtienen pesos que decaen demasiado rápido, como el decaimiento exponencial. El **half-life** es un concepto que ayuda a controlar que tan rápido deben decaer el tamaño de los pesos.
+
+Un **half-life se alcanza cuando se acumula la mitad de la suma de los pesos**. En nuestro contexto el decaimiento ocurre de lo más reciente a lo más lejano. Por ejemplo, un half-life de 3 meses implica que:
 
 -   los pesos asignados en los tres meses más recientes acumulan
     aproximadamente 0.5, y
 -   los pesos para el resto de la serie acumulan aproximadamente 0.5.
 
-De esta manera, series de pesos con un half-life de tres meses decaen
-más rápido que series de pesos con un half-life de un año.
+De esta manera, series de pesos con un half-life de tres meses decaen más rápido que series de pesos con un half-life de un año.
 
-En el \<Anexo\> se incluye el detalle teórico del decaimiento
-geométrico.
+En el \<Anexo\> se incluye el detalle teórico de la construcción de pesos con *decaimiento geométrico* para lo que se utilizan, precisamente, distribuciones geométricas.
 
-Utilizamos decaimiento con half-life en las series de tiempo de saldo y de porcentaje puntual, impuntual y rescate de los clientes. La figura \@ref(fig:decaimiento) muestra una serie de saldos suavizados con un half-life de tres meses. Como se observa, el decaimiento no solo incorpora la información del pasado en cada momento, también elimina el ruido en la serie. Es decir, los picos o registros atípicos son suavizados por el decaimiento.
+A partir de las series de saldos de los clientes y series de pesos construidas con decaimiento geométrico y half-life de tres meses, generamos series de promedios móviles que guardamos en la variable `saldo_prom_decay`. La figura \@ref(fig:decaimiento) muestra un ejemplo de las serie de saldos móviles resultantes. Como se observa, el decaimiento incorpora la información del pasado en cada momento y además suaviza o elimina el ruido de la serie original.
 
 <!-- ```{r} -->
 <!-- ejemplos <- creditos %>% -->
@@ -281,7 +280,15 @@ creditos %>%
   geom_line()
 ```
 
-Se construyeron series de tiempo adicionales para capturar la magnitud de los cambios y la volatilidad en los saldos y pagos de los clientes. En el \<Anexo\> se describe la construcción de estas variables.
+Por otro lado, transformamos con decaimiento geométrico las series de porcentaje puntual, impuntual y rescate de los clientes con lo que generamos otras tres variables: `porc_puntual_decay`, `porc_impuntual_decay`, y `porc_rescate_decay`. 
+
+### Cambios móviles y volatilidad
+
+Al restar en cada estampa de tiempo el saldo de un cliente menos el saldo de la estampa de tiempo anterior, se obtuvieron series de diferencias en saldo. A estas series se les aplicó decaimiento para crear la variable `delta_saldo_prom_decay`. 
+
+Al obtener en cada estampa de tiempo la varianza de las diferencias en saldo de un cliente, se obtuvieron series de volatilidad en saldo. A estas series se les aplicó decaimiento para crear la variable `delta_saldo_sd_decay`.
+
+En la figura \<ref\> tenemos las series de diferencias y de volatilidades del saldo de un crédito. 
 
 <!-- ```{r} -->
 <!-- ejemplos <- creditos %>% -->
@@ -298,8 +305,10 @@ Se construyeron series de tiempo adicionales para capturar la magnitud de los ca
 <!--   p <- creditos %>% -->
 <!--     filter(pkcolocadora == colocadora_ej) %>% -->
 <!--     select(fechaCorte, -->
-<!--          saldoActual,  -->
-<!--          saldo_prom_decay) %>% -->
+<!--          saldoActual, -->
+<!--          saldo_prom_decay, -->
+<!--          delta_saldo_prom_decay, -->
+<!--          delta_saldo_sd_decay) %>% -->
 <!--     rename(date = fechaCorte) %>% -->
 <!--    gather(key, value,-date) %>% -->
 <!--    ggplot(aes(x = date, -->
@@ -309,83 +318,28 @@ Se construyeron series de tiempo adicionales para capturar la magnitud de los ca
 <!--     labs(title = colocadora_ej) -->
 <!--   print(p) -->
 <!-- } -->
+<!-- ``` -->
 
-# Anexo
+```{r, echo=FALSE}
+colocadora_ej = 15695
 
-## Decaimento Geométrico
-
-Aquí presentaremos un método para obtener series diarias de pesos monotónicos decrecientes con un half-life de $m$ días. Esto significa que buscamos una serie $w = (w^T, w^{T-1}, \dots, w^1)$ de pesos diarios tal que $w^t \geq w^{t-1}$, $\sum w^t = 1$ y que además se cumplan dos condiciones:
-
-* $\sum^T_{k=m} w^k \leq 1/2$ 
-* $\sum^m_{k=1} w^k \leq 1/2$
-
-Para esto **nos basaremos en una distribución geométrica** en donde $X$ que es el número de fracasos antes del primer éxito con soporte en $\{1, 2, 3, \ldots\}$. Si $X\sim\text{Geom}(p)$ entonces $\Pr[X = k] = p(1-p)^{k-1}$ y la probabilidad acumulada hasta $x$ está dada por $\sum^x_{k=1}\Pr[X=k]$. Usando la serie geométrica tenemos que
-
-$$
-\begin{aligned}
-\sum^x_{k=1}\Pr[X=k] & =
-\sum^x_{k=1}p(1-p)^{k-1} \\
- &= p\sum^{x-1}_{k=0}(1-p)^k \\
- &= p\frac{1-(1-p)^x}{1-(1-p)}=
-1-(1-p)^x
-\end{aligned}
-$$
-
-Dado un half-life $m$, contruyamos una variable aleatoria $Y$ que tiene distribución geométrica truncada y cuya mediana es $m$: 
-
-* Si $Y$ tiene una distribución geométrica truncada, entonces tiene soporte finito $\{1, 2, 3, \ldots, T\}$ y su función de probabilidad es $\Pr[Y = k] = \Pr[X=k|X \leq T] = \frac{1}{C}\Pr[X=k]$ donde $C=\sum^T_{k=1}\Pr[X=k]$. Esto es
-
-$$
-\begin{aligned}
-\Pr[Y=k] & = \Pr[X=k|X \leq T] \\
-& = \frac{\Pr[X=k]}{\sum^T_{k=1}\Pr[X=k]} & \\
-& = \frac{p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}}  = 
-\frac{p(1-p)^{k-1}}{1-(1-p)^T}
-\end{aligned}
-$$
-
-* Si la mediana de $Y$ es $m$, entonces buscamos aquella $p$ que cumpla que $\sum^m_{k=1}\Pr[Y=k] = 1/2$. Esto es
-
-
-$$
-\begin{aligned}
-\sum^m_{k=1}\Pr[Y=k] & = \frac{1}{C}\sum^m_{k=1}\Pr[X=k] \\
-& = \frac{\sum^m_{k=1}p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}} \\
-& = \frac{\sum^{m-1}_{k=0}(1-p)^k}{\sum^{T-1}_{k=0}(1-p)^k} =
-\frac{1-(1-p)^m}{1-(1-p)^T}= 1/2
-\end{aligned}
-$$
-
-No existe una solución analítica para $p$, pero podemos obtener soluciones numéricas; existirá una solución siempre y cuando $m\in (0,T/2)$, con $p \to 0$ si $m\to T/2$ y $p\to 1$ si $m\to 0$. 
- 
-Supongamos que tenemos $T = 1000$ y $m = 45$, **¿bajo qué $p$ la distribución de $Y$ acumula $0.5$ en $m$?** La solución es $p=0.0153$ como se muestra en la \@ref(fig:pesos).
-
-```{r, pesos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="La solución p"}
-T = 1000
-m = 45
-
-median_p <- function(p) (1-(1-p)^m) / (1-(1-p)^T) - 0.5
-s <- uniroot(median_p, c(0.000001,0.999999))
-p <- s$root
-
-pseq = seq(0.000001, 0.999999, length.out = 1000)
-plot(pseq, median_p(pseq), type = "l")
-abline(h = 0.0)
-abline(v = p, col = "red")
+creditos %>% 
+  filter(pkcolocadora == colocadora_ej) %>%
+  select(fechaCorte,
+         saldoActual,
+         saldo_prom_decay,
+         delta_saldo_prom_decay,
+         delta_saldo_sd_decay) %>% 
+  rename(date = fechaCorte) %>% 
+  gather(key, value,-date) %>% 
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) + 
+  geom_line()
 ```
 
-Con esto, proponemos la serie de pesos $w$ tal que
+En el capítulo de \<pipeline\> se explica dónde encontrar el código con el que se construyeron todas las variables que describimos arriba.
 
-* $w^T \rightarrow \Pr[Y = 1]$
-* $w^{T-1} \rightarrow \Pr[Y = 2]$
-* $\vdots$
-* $w^1 \rightarrow \Pr[Y = T]$
+<!-- La mediana de longitud de vida de los créditos del Banco es de xx cortes o quincenas. Después de acotar la vida de los créditos en tres años o $1,000$ cortes, en la figura \<ref\> se muestra la distribución de la longitud de vida de los créditos del Banco.   -->
 
-En la figura \@ref(fig:geometricos) se muestra la serie de pesos con decaimento geométrico con $T = 1000$ y $m = 45$. La línea vertical se encuentra sobre el half-life $m$ donde se acumula el 50% de los pesos.
-
-```{r, geometricos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Ejemplo con T = 1000 y m = 45"}
-k <- 1:T
-w <- p * (1-p)^{k-1} / (1-(1-p)^T)
-plot(w, type = 'l')
-abline(v=m, col = "red")
-```
+<!-- Veamos la distribución de la vida media de los créditos en los portafolios -->

@@ -1,8 +1,0 @@
-<!-- # Methods -->
-
-<!-- We describe our methods in this chapter. -->
-
-
-La mediana de longitud de vida de los créditos del Banco es de xx cortes o quincenas. Después de acotar la vida de los créditos en tres años o $1,000$ cortes, en la figura \<ref\> se muestra la distribución de la longitud de vida de los créditos del Banco.  
-
-Veamos la distribución de la vida media de los créditos en los portafolios
