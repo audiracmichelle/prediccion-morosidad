@@ -22,18 +22,29 @@ creditos %>%
   geom_line()
 ```
 
+
 ```{r}
 creditos %>% 
   group_by(fechaCorte) %>% 
   rename(date = fechaCorte) %>% 
-  summarize(mean_ppuntual = mean(porc_puntual), 
-            mean_pimpuntual = mean(porc_impuntual), 
-            mean_prescate = mean(porc_rescate)) %>% 
+  summarize(mean_label = mean(label_impuntual_2),
+            mean_impuntual = mean(porc_impuntual_prom_decay)) %>%
   gather(key, value, -date) %>%
   ggplot(aes(x = date, y = value, color = key)) +
   geom_line()
-  
 ```
+
+
+```{r}
+creditos %>% 
+  group_by(fechaCorte) %>% 
+  rename(date = fechaCorte) %>% 
+  summarize(mean_label = mean(label_impuntual_2, na.rm = TRUE)) %>%
+  gather(key, value, -date) %>%
+  ggplot(aes(x = date, y = value, color = key)) +
+  geom_line()
+```
+
 
 ```{r}
 creditos %>% 
@@ -84,6 +95,21 @@ creditos %>%
 creditos %>% 
   group_by(fechaCorte) %>% 
   rename(date = fechaCorte) %>% 
+  summarize(sum_importeMovimiento = sum(importeMovimiento, na.rm = TRUE), 
+            sum_puntual = sum(puntual, na.rm = TRUE) / sum_importeMovimiento, 
+            sum_impuntual = (sum(impuntual, na.rm = TRUE) + 
+              sum(rescate, na.rm = TRUE)) / sum_importeMovimiento, 
+            sum_importeMovimiento = 1) %>% 
+  gather(key, value, -date) %>%
+  ggplot(aes(x = date, y = value, color = key)) +
+  geom_line()
+```
+
+
+```{r}
+creditos %>% 
+  group_by(fechaCorte) %>% 
+  rename(date = fechaCorte) %>% 
   summarize(num = n(), 
             puntual = sum(porc_puntual >= 0.6, na.rm = TRUE),
             impuntual = sum(porc_impuntual >= 0.6, na.rm = TRUE), 
@@ -95,50 +121,41 @@ creditos %>%
 
 ```{r}
 creditos %>% 
-  mutate(date = mltools::date_factor(fechaPago, type = "yearquarter"), 
-         dias_despues = if_else(dias_despues_fechaPago > 10, 10, dias_despues_fechaPago),
-         dias_despues = if_else(dias_despues < -10, -10, dias_despues)) %>% 
-  ggplot() + 
-  geom_boxplot(aes(x=date, y=dias_despues)) + 
-  theme(axis.text.x = element_text(angle = 90))
+  group_by(fechaCorte) %>% 
+  rename(date = fechaCorte) %>% 
+  summarize(num = n(), 
+            puntual = sum(porc_puntual >= 0.6, na.rm = TRUE) / num,
+            impuntual = (sum(porc_impuntual >= 0.6, na.rm = TRUE) + 
+                           sum(porc_rescate >= 0.6, na.rm = TRUE)) / num, 
+            num = 1) %>% 
+  gather(key, value, -date) %>%
+  ggplot(aes(x = date, y = value, color = key)) +
+  geom_line()
 ```
 
-```{r}
-creditos %>% 
-  mutate(date = mltools::date_factor(fechaPago, type = "yearquarter")) %>% 
-  ggplot() + 
-  geom_boxplot(aes(x=date, y=dias_puntual_prop_decay)) +
-  theme(axis.text.x = element_text(angle = 90))
-```
 
-```{r}
-creditos %>% 
-  mutate(date = mltools::date_factor(fechaPago, type = "yearquarter")) %>% 
-  ggplot() + 
-  geom_boxplot(aes(x=date, y=porc_puntual_sd_decay)) + 
-  theme(axis.text.x = element_text(angle = 90))
-```
-
-<!-- ```{r setup, include=FALSE} -->
-<!-- knitr::opts_chunk$set(echo = TRUE) -->
+<!-- ```{r} -->
+<!-- creditos %>%  -->
+<!--   mutate(date = mltools::date_factor(fechaPago, type = "yearquarter"),  -->
+<!--          dias_despues = if_else(dias_despues_fechaPago > 10, 10, dias_despues_fechaPago), -->
+<!--          dias_despues = if_else(dias_despues < -10, -10, dias_despues)) %>%  -->
+<!--   ggplot() +  -->
+<!--   geom_boxplot(aes(x=date, y=dias_despues)) +  -->
+<!--   theme(axis.text.x = element_text(angle = 90)) -->
 <!-- ``` -->
 
-<!-- ## R Markdown -->
-
-<!-- This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. -->
-
-<!-- When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this: -->
-
-<!-- ```{r cars} -->
-<!-- summary(cars) -->
+<!-- ```{r} -->
+<!-- creditos %>%  -->
+<!--   mutate(date = mltools::date_factor(fechaPago, type = "yearquarter")) %>%  -->
+<!--   ggplot() +  -->
+<!--   geom_boxplot(aes(x=date, y=dias_puntual_prop_decay)) + -->
+<!--   theme(axis.text.x = element_text(angle = 90)) -->
 <!-- ``` -->
 
-<!-- ## Including Plots -->
-
-<!-- You can also embed plots, for example: -->
-
-<!-- ```{r pressure, echo=FALSE} -->
-<!-- plot(pressure) -->
+<!-- ```{r} -->
+<!-- creditos %>%  -->
+<!--   mutate(date = mltools::date_factor(fechaPago, type = "yearquarter")) %>%  -->
+<!--   ggplot() +  -->
+<!--   geom_boxplot(aes(x=date, y=porc_puntual_sd_decay)) +  -->
+<!--   theme(axis.text.x = element_text(angle = 90)) -->
 <!-- ``` -->
-
-<!-- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. -->

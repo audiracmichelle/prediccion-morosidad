@@ -1,0 +1,130 @@
+---
+title: "payday_lag_model"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(feather)
+library(magrittr)
+
+creditos <- read_feather('../pipeline/wrangle_train/output/collapse_train_20180823_prod.feather')
+
+creditos_train <- creditos %>% 
+  filter(fechaCorte <= as.Date("2017-12-31"))
+
+creditos_test <- creditos %>% 
+  filter(fechaCorte > as.Date("2017-12-31"))
+
+scaling <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+```
+
+___
+
+```{r}
+cols <- c('antiguedad', 'saldo_prom_decay',
+                'delta_saldo_prom_decay', 'delta_saldo_sd_decay',
+                'porc_puntual_prom_decay', 'porc_puntual_sd_decay')
+
+df_train <- creditos_train[cols] %>% mutate_all(scaling)
+```
+
+```{r}
+comps <- prcomp(df_train)
+evec <- comps$rotation #los renglones son loadings
+evec
+```
+
+```{r}
+eval <- comps$sdev
+print(eval)
+summary(comps)
+```
+
+```{r}
+df_test <- creditos_test[cols] %>% mutate_all(scaling)
+rot_df_test <- as.matrix(df_test) %*% evec
+rot_df_test <- as.data.frame(rot_df_test)
+rot_df_test$label_impuntual_2 <- creditos_test$label_impuntual_2
+```
+
+
+```{r}
+rot_df_test %>% 
+  sample_n(200) %>% 
+  ggplot(aes(x=PC1, y=PC2, colour=label_impuntual_2)) + 
+  geom_point()
+```
+
+```{r}
+library(ggrepel)
+
+evec %>% 
+  as.data.frame() %>%
+  rownames_to_column() %>% 
+  as_tibble() %>% 
+  ggplot(aes(x=PC1,y=PC2,label=rowname)) + 
+  geom_point() + 
+  geom_label_repel()
+  
+```
+
+
+<!-- pca <- PCA(df_xy, graph = FALSE) -->
+<!-- #explor(pca) -->
+<!-- res <- explor::prepare_results(pca) -->
+
+<!-- explor::PCA_var_plot(res, xax = 1, yax = 2, -->
+<!--     var_sup = FALSE, var_lab_min_contrib = 0, -->
+<!--     col_var = NULL, labels_size = 8, scale_unit = TRUE, -->
+<!--     transitions = TRUE, labels_positions = NULL, -->
+<!--     xlim = c(-1.1, 1.1), ylim = c(-1.1, 1.1)) -->
+
+
+___
+
+```{r}
+cols <- c('antiguedad', 'saldoActual','delta_saldo','porc_puntual')
+
+df_train <- creditos_train[cols] %>% mutate_all(scaling)
+```
+
+```{r}
+comps <- prcomp(df_train)
+evec <- comps$rotation #los renglones son loadings
+evec
+```
+
+```{r}
+eval <- comps$sdev
+print(eval)
+summary(comps)
+```
+
+```{r}
+df_test <- creditos_test[cols] %>% mutate_all(scaling)
+rot_df_test <- as.matrix(df_test) %*% evec
+rot_df_test <- as.data.frame(rot_df_test)
+rot_df_test$label_impuntual_2 <- creditos_test$label_impuntual_2
+```
+
+
+```{r}
+rot_df_test %>% 
+  sample_n(200) %>% 
+  ggplot(aes(x=PC1, y=PC2, colour=label_impuntual_2)) + 
+  geom_point()
+```
+
+```{r}
+library(ggrepel)
+
+evec %>% 
+  as.data.frame() %>%
+  rownames_to_column() %>% 
+  as_tibble() %>% 
+  ggplot(aes(x=PC1,y=PC2,label=rowname)) + 
+  geom_point() + 
+  geom_label_repel()
+  
+```
