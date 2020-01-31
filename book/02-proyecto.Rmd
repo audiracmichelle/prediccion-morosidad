@@ -156,7 +156,11 @@ plot2 <- creditos %>%
 grid.arrange(plot1, plot2, nrow=2)
 ```
 
-En este ejemplo tenemos que el cliente hizo pagos puntuales en la primer mitad del año 2017. A partir de julio 2017 el cliente empieza a hacer pagos impuntuales más frecuentemente. En 2018 el cliente se atrasa frecuentemente en sus pagos y en varios cortes realiza pagos de rescate. Finalmente, en la figura se puede apreciar que el porcentaje pagado no siempre suma 100%; esto se explica en la siguiente sección.
+A primera vista podemos apreciar que el porcentaje pagado no siempre suma 100%; por ahora ignoraremos esto ya en la sección \<ref\> se cubre la limpieza de datos. Poniendo atención al comportamiento de pago representado en la imagen tenemos que:
+
+* El cliente hizo pagos puntuales en la primer mitad del año 2017. 
+* A partir de julio 2017 el cliente empieza a hacer pagos impuntuales más frecuentemente. 
+* En 2018 el cliente se atrasa frecuentemente en sus pagos y en varios cortes realiza pagos de rescate.
 
 <!-- En la figura \<ref\> se muestran los momentos de pago del mismo cliente. De esta forma: -->
 
@@ -198,7 +202,22 @@ Ya que las tablas de saldos y de transacciones de pago no tienen registros antes
 
 **Secuencia de estampas de tiempo**
 
-En algunos casos, la secuencia en una historia de crédito tenía datos faltantes. En lugar de imputar pagos, se decidió eliminar la estampa de tiempo en la historia del cliente cuando sólo faltaba una estampa de forma consecutiva. Cuando se tenían datos faltantes en dos o más estampas consecutivas se decidió asignarle una bandera al cliente y avisarle al Banco que no se podría generar una predicción para ese cliente. 
+En algunos casos, la secuencia en una historia de crédito tenía datos faltantes. En lugar de imputar pagos, se decidió eliminar la estampa de tiempo en la historia del cliente cuando sólo faltaba una estampa de forma consecutiva. Cuando se tenían datos faltantes en dos o más estampas consecutivas se decidió asignarle una bandera al cliente y avisarle al Banco que no se podría generar una predicción para ese cliente.
+
+La figura \<ref\> muestra el histograma del número de estampas consecutivas faltantes en las historias de los clientes excluyendo el cero.
+
+```{r, faltantes, echo=FALSE, out.width="50%", fig.align="center", fig.pos="H", fig.cap="Histogramas de número de fechas faltantes consecutivas"}
+# limpieza %>% 
+#   filter(max_fechas_faltantes_seguidas > 0) %>% 
+#   ggplot(aes(x=max_fechas_faltantes_seguidas)) +
+#   geom_histogram()
+
+limpieza %>% 
+  filter(max_fechas_faltantes_seguidas > 0) %>% 
+  pull(max_fechas_faltantes_seguidas) %>% 
+  hist()
+```
+
 
 Existen clientes que dejaron de tener actividad crediticia por periodos de más de un año. En estos casos se decidió ignorar el pasado de los cliente y considerarlos como nuevos clientes a partir de la fecha en la que volvieron a estar activos. Además, se consideraron como inactivos a los clientes que mantenía un saldo negativo o un saldo menor de 1,000 pesos en varios periodos consecutivos. 
 
@@ -212,13 +231,11 @@ En muchas ocasiones el mínimo abonado y el mínimo a pagar de los clientes no c
 
 ## Feature Engineering
 
-Las series de tiempo de personas con buen historial crediticio comparten ciertos patrones, lo mismo ocurre con personas impuntuales. Debemos diseñar variables para que los modelos supervisados identifiquen dichos patrones.
-
-Hasta este momento, entendemos el comportamiento o características de cada crédito en una fecha de corte específico. En el ejemplo en la figura \@ref(fig:ej1) sabemos que el cliente $X$ pagó el 75% puntual y el 25% impuntual en el corte 1, pero esa información no nos aporta información del comportamiento de pago del cliente $X$ en el pasado: ¿esta es la primera vez que hizo un pago impuntual,o suele hacer pagos impuntuales frecuentemente?
+Las series de tiempo de personas con buen historial crediticio comparten ciertos patrones, lo mismo ocurre con personas impuntuales. Debemos diseñar variables para que los modelos supervisados identifiquen dichos patrones. Hasta este momento, entendemos el comportamiento o características de cada crédito en una fecha de corte específico. Sin embargo, esta información no nos aporta información del comportamiento de pago en el pasado.
 
 Se construyeron tres tipos de transformaciones que, a partir de las series de tiempo que conforman una historia de crédito, resumen el comportamiento pasado de un cliente. El primer tipo de transformación es un promedio ponderado que utiliza una función de decaimiento que permite asignar más peso a la historia reciente del cliente. Las otros dos transformaciones capturan la magnitud y la varianza de los cambios en las historias de crédito de los clientes. A continuación se describen a más detalle estas tres transformaciones.
 
-### Promedios ponderados con half-life
+### Decaimiento geométrico y promedios móviles
 
 Existen muchos métodos para obtener series de pesos con **decaimiento** que sumen uno. Con algunos métodos se obtienen pesos que decaen demasiado rápido, como el decaimiento exponencial. El **half-life** es un concepto que ayuda a controlar que tan rápido deben decaer el tamaño de los pesos.
 
@@ -280,13 +297,15 @@ creditos %>%
   geom_line()
 ```
 
-Por otro lado, transformamos con decaimiento geométrico las series de porcentaje puntual, impuntual y rescate de los clientes con lo que generamos otras tres variables: `porc_puntual_decay`, `porc_impuntual_decay`, y `porc_rescate_decay`. 
 
-### Cambios móviles y volatilidad
+<!-- Por otro lado, transformamos con decaimiento geométrico las series de porcentaje puntual, impuntual y rescate de los clientes con lo que generamos otras tres variables: `porc_puntual_decay`, `porc_impuntual_decay`, y `porc_rescate_decay`.  -->
+
+
+### Series de diferencias y volatilidad
 
 Al restar en cada estampa de tiempo el saldo de un cliente menos el saldo de la estampa de tiempo anterior, se obtuvieron series de diferencias en saldo. A estas series se les aplicó decaimiento para crear la variable `delta_saldo_prom_decay`. 
 
-Al obtener en cada estampa de tiempo la varianza de las diferencias en saldo de un cliente, se obtuvieron series de volatilidad en saldo. A estas series se les aplicó decaimiento para crear la variable `delta_saldo_sd_decay`.
+Al obtener en cada estampa de tiempo la desviación estándar de las diferencias en saldo de un cliente, se obtuvieron series de volatilidad en saldo. A estas series se les aplicó decaimiento para crear la variable `delta_saldo_sd_decay`.
 
 En la figura \<ref\> tenemos las series de diferencias y de volatilidades del saldo de un crédito. 
 
@@ -320,7 +339,7 @@ En la figura \<ref\> tenemos las series de diferencias y de volatilidades del sa
 <!-- } -->
 <!-- ``` -->
 
-```{r, echo=FALSE}
+```{r, volatilidad, echo=FALSE}
 colocadora_ej = 15695
 
 creditos %>% 
@@ -338,8 +357,104 @@ creditos %>%
   geom_line()
 ```
 
-En el capítulo de \<pipeline\> se explica dónde encontrar el código con el que se construyeron todas las variables que describimos arriba.
+En el capítulo de \<pipeline\> se explica dónde encontrar el código con el que se construyeron las variables que describimos arriba. Cabe recalcar que se produjeron transformaciones para todas las estampas de tiempo y todos los clientes. Esto significa que para 100 clientes con historias de crédito de 100 periodos, se calcularían 10,000 series de pesos con decaimiento y se obtendría un conjunto de datos de 10,000 muestras.
 
-<!-- La mediana de longitud de vida de los créditos del Banco es de xx cortes o quincenas. Después de acotar la vida de los créditos en tres años o $1,000$ cortes, en la figura \<ref\> se muestra la distribución de la longitud de vida de los créditos del Banco.   -->
+Con esto, la siguiente lista muestra todas las variables que se utilizaron en la selección de modelos. Cada variable contiene información de crédito de un cliente en una fecha de corte específica:
 
-<!-- Veamos la distribución de la vida media de los créditos en los portafolios -->
+* `antiguedad` - antigüedad del cliente a la fecha de corte.
+* `saldoActual` - saldo que presenta el cliente a la fecha de corte.
+* `delta_saldo` - diferencia entre el valor del saldo que presenta el cliente a la fecha de corte y el saldo en la fecha de corte anterior.
+* `saldo_prom_decay` - promedio del saldo histórico del cliente, ponderado con decaimiento geométrico a la fecha de corte.
+* `dias_despues_fechaPago_prom_decay` - promedio del momento de pago del cliente, ponderado con decaimiento geométrico a la fecha de corte.
+* `porc_puntual_prom_decay` - promedio (con decaimiento geométrico a la fecha de corte) del porcentaje puntual en los pagos del cliente.
+* `porc_impuntual_prom_decay` - promedio (con decaimiento geométrico a la fecha de corte) del porcentaje impuntual en los pagos del cliente.
+* `porc_rescate_prom_decay` - promedio (con decaimiento geométrico a la fecha de corte) del porcentaje en rescate en los pagos del cliente.
+* `dias_puntual_prop_decay` - proporción (con decaimiento geométrico a la fecha de corte) de cortes con abonos puntuales.
+* `dias_impuntual_prop_decay` - proporción (con decaimiento geométrico a la fecha de corte) de cortes con abonos impuntuales.
+* `dias_rescate_prop_decay` - proporción (con decaimiento geométrico a la fecha de corte) de cortes con abonos en rescate.
+* `delta_saldo_prom_decay` - promedio de los cambios en el saldo de la colocadora, ponderado con decaimiento geométrico a la fecha de corte.
+* `delta_saldo_sd_decay` - desviación standard (con decaimiento geométrico a la fecha de corte) de los cambios en el saldo de la colocadora.
+* `porc_puntual_sd_decay` - desviación standard (con decaimiento geométrico a la fecha de corte) del porcentaje puntual de los pagos del cliente.
+* `porc_impuntual_sd_decay` - desviación standard (con decaimiento geométrico a la fecha de corte) del porcentaje impuntual de los pagos del cliente.
+
+### Etiquetas 
+
+Recordemos que el indicador de impuntualidad debe predecir si, en los siguientes tres cortes, el momento de pago de un cliente caera en la cola amarilla y roja del tríangulo de pagos. 
+
+De acuerdo con lo que los representantes del Banco les explicaron a los científicos de datos, es común que los clientes se atrasen uno o dos días en sus pagos por algún contratiempo sin representar un riesgo. Por esto, conjuntamente se decidió que la etiqueta de un cliente en $t$ debía considerar el promedio de los momentos de pago de los siguientes tres cortes $t+1$, $t+2$ y $t+3$; y que la etiqueta sería 1 si el promedio es mayor a 2 y 0 en los demás casos.
+
+<!-- Usando el comportamiento de pago del cliente $Y$ en el Ejemplo 2, si estamos parados en la fecha de pago 0 tenemos que: -->
+
+<!-- * El momento de pago en el corte 1 es xxx, en el corte 2 es xxx y en el corte 3 es xxxx.  -->
+<!-- * El promedio de los momentos de pago de los siguientes tres cortes es xxx. -->
+<!-- * La etiqueta de impuntualidad correspondiente al cliente $y$ en la fecha de pago 0 tiene un valor de 1.  -->
+
+Los promedios de los momentos de pago en los tres cortes siguientes los guardamos en `label_dias_despues_fechaPago_prom` y las etiquetas de impuntualidad las guardamos en la variable `label_impuntual_2`. 
+
+## Selección de Modelos
+
+Hagamos un ejercicio visual simple que nos permita ver cómo ayudan las nuevas variables a capturar los patrones de pago futuro de los clientes. La figura \<ref\> contiene dos gráficas de componentes principales. La diferencia en las gráficas es que los puntos se generaron con distintas matrices de rotación:
+
+* En el recuadro de la derecha se consturyó la matriz de rotación con cuatro variables de datos crudos: `antiguedad`, `saldoActual`, `delta_saldo`, y `porc_puntual`. 
+* En el recuadro de la izquierda se consturyó la matriz de rotación con las siguientes variables: `antiguedad`, `saldo_prom_decay`, `delta_saldo_prom_decay`, `delta_saldo_sd_decay`, `porc_puntual_prom_decay`, `porc_puntual_sd_decay`, y `dias_puntual_prop_decay`. Como vemos, este segundo grupo de variables incluye decaimientos, diferencias y volatilidades. 
+
+Los puntos en azul claro representan entradas con etiquetas de impuntualidad positivas, los puntos en azul obscuro tienen etiquetas negativas.
+
+```{r, pca, echo=FALSE}
+scaling <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+set.seed(2019)
+train <- which(creditos$fechaCorte <= as.Date("2017-12-31"))
+test <- which(creditos$fechaCorte > as.Date("2017-12-31"))
+sampling <- sample(nrow(creditos[test, ]), 300)
+
+cols <- c('antiguedad', 'saldo_prom_decay', 'delta_saldo_prom_decay', 'delta_saldo_sd_decay', 'porc_puntual_prom_decay', 'porc_puntual_sd_decay', 'dias_puntual_prop_decay')
+
+df_train <- creditos[train, ] %>% 
+  select(cols) %>% 
+  mutate_all(scaling)
+
+comps <- prcomp(df_train)
+evec <- comps$rotation
+
+df_test <- creditos[test, ] %>% 
+  select(cols) %>% 
+  mutate_all(scaling)
+
+rot_df_test <- as.matrix(df_test) %*% evec
+rot_df_test <- as.data.frame(rot_df_test)
+rot_df_test$label_impuntual_2 <- creditos$label_impuntual_2[test]
+
+p1 <- rot_df_test[sampling, ] %>%  
+  ggplot(aes(x=PC1, y=PC2, colour=label_impuntual_2)) + 
+  geom_point(alpha=0.75) + theme(legend.position = "none")
+
+cols <- c('antiguedad', 'saldoActual','delta_saldo','porc_puntual')
+
+df_train <- creditos[train, ] %>% 
+  select(cols) %>% 
+  mutate_all(scaling)
+
+comps <- prcomp(df_train)
+evec <- comps$rotation
+
+df_test <- creditos[test, ] %>% 
+  select(cols) %>% 
+  mutate_all(scaling)
+
+rot_df_test <- as.matrix(df_test) %*% evec
+rot_df_test <- as.data.frame(rot_df_test)
+rot_df_test$label_impuntual_2 <- creditos$label_impuntual_2[test]
+
+p2 <- rot_df_test[sampling, ] %>% 
+  ggplot(aes(x=PC1, y=PC2, colour=label_impuntual_2)) + 
+  geom_point(alpha=0.75) + theme(legend.position = "none")
+
+grid.arrange(p1, p2, ncol=2)
+```
+
+Los puntos claros se separan más de los puntos obscuros en el recuadro izquierdo que en el recuadro derecho. Esto nos da señales de que el decaimiento, las diferencias y las volatilidades capturan mejor el comportamiento de pago futuro de los clientes que los datos crudos de crédito.
+
+<!-- Ahora incorporemos la etiqueta `label_dias_despues_fechaPago_prom` y otras variables al cálculo de componentes principales para obtener la gráfica de *loadings* que apreciamos en la figura \<ref\>. A partir de esta gráfica podemos decir que las dos direcciones de mayor varianza en nuestros datos se pueden interpretar como En esta gráfica vemos que la primer componente principal está más influenciada por   -->
+
+Ahora vamos a describir los pasos que se siguieron para hacer la selección de modelos. 
+aunque no se mencionó antes, uno de los hiperparámetros era el half-life del decaimiento 

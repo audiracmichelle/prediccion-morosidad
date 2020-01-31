@@ -41,8 +41,9 @@ library(gridExtra)
 
 creditos <- read_feather('../pipeline/wrangle_train/output/collapse_train_20180823_prod.feather')
 design_matrix <- read_feather('../pipeline/preprocess/output/design_matrix_20180823_prod.feather')
+limpieza <- read_csv('../pipeline/wrangle_train/output/limpieza_train_20180823_prod.csv')
 ```
 
 # Introducción
 
-instalar gridExtra en Docker
+Xxx

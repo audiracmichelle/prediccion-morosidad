@@ -93,13 +93,11 @@ creditos %>%
   
 ```
 
-De acuerdo con los científicos de datos, el indicador de impuntualidad debía ser el encargado de predecir si, en los siguientes tres cortes, el momento de pago de un cliente caerá en la cola amarilla y roja del tríangulo de pagos. El Banco aceptó la propuesta.
+De acuerdo con los científicos de datos, el indicador de impuntualidad debía ser el encargado de predecir si, en los siguientes tres cortes, el momento de pago de un cliente caería en la cola amarilla y roja del tríangulo de pagos. El Banco aceptó la propuesta.
 
 ## Mecanismo de Validación
 
-El indicador de impuntualidad requiere un modelo supervisado de clasificación; los modelos supervisados requieren datos etiquetados. Como el Banco considera que es común que los clientes se atrasen uno o dos días sin representar un riesgo, se decidió que la etiqueta debía considerar el promedio de los momentos de pago de los siguientes tres cortes. La etiqueta es 1 si el promedio es mayor a 2 y la etiqueta es 0 en los demás casos. 
-
-Se obtuvieron etiquetas para cada cliente y para cada corte en los datos históricos del Banco. Con esto, tenemos que el 87.85% son casos negativos y el 12.15% casos positivos.
+En la sección \<ref\> se detalla como se construyó la etiqueta de impuntualidad con la que se entrenaron modelos supervisados. Por ahora nos basta saber que se obtuvieron etiquetas para cada cliente y para cada corte en los datos históricos del Banco y con esto se obtuvo que el 87.85% de los casos históricos son negativos y el 12.15% positivos.
 
 Para nuestro problema de clasificación es posible utilizar cualquiera de los siguientes modelos base: la **regla cero** (zero rule, 0R or ZeroR) o el **muestreo aleatorio**. La regla cero consiste en asignar una predicción "cero" en todos los casos.
 
