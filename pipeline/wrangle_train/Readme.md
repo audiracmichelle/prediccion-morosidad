@@ -14,7 +14,7 @@ Si se quieren utilizar las ubicaciones locales del pipeline, hay que usar
 
 ```sh
 $ cd .. #hay que moverse a la carpeta pipeline/
-$ docker run -it --rm  -v $(pwd)/preprocess/output:/home/preprocess/output -v $(pwd)/wrangle_train/output:/home/wrangle_train/output prediccion_morosidad_wrangle_train <ymd_preprocess> <tag_preprocess> <tag_wrangle_train> <halflife> <min_len_predictors> "local"
+$ docker run -it --rm  -v $(pwd)/preprocess/output:/home/rstudio/pipeline/preprocess/output -v $(pwd)/wrangle_train/output:/home/rstudio/pipeline/wrangle_train/output prediccion_morosidad_wrangle_train <ymd_preprocess> <tag_preprocess> <tag_wrangle_train> <halflife> <min_len_predictors> "local"
 ```
 
 Para utilizar un bucket de s3 de lectura y escritura de datos, hay que correr el contenedor con la siguiente línea

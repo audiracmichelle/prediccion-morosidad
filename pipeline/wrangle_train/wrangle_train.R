@@ -8,6 +8,7 @@ suppressMessages(library(tidyverse))
 suppressMessages(library(magrittr))
 suppressMessages(library(lubridate))
 suppressMessages(library(xts))
+suppressMessages(library(plotly))
 
 system("echo '===== Loading functions ====='")
 
@@ -63,6 +64,7 @@ get_label_prom <- function(
 #   strikes$values <- strikes$lengths > veces & strikes$values
 #   rep(strikes$values, strikes$lengths)
 # }
+
 system("echo '===== Loading params ====='")
 
 params <- list()
@@ -92,10 +94,10 @@ params$max_fechas_faltantes_seguidas <- 2
 system("echo '===== Fetching data ====='")
 
 if(params$bucket_s3 == "local") {
-  limpieza <- read_feather(paste0('/home/preprocess/output/limpieza_',
+  limpieza <- read_feather(paste0('/home/rstudio/pipeline/preprocess/output/limpieza_',
                                   params$ymd_preprocess, '_', 
                                   params$tag_preprocess, '.feather'))
-  creditos <- read_feather(paste0('/home/preprocess/output/design_matrix_',
+  creditos <- read_feather(paste0('/home/rstudio/pipeline/preprocess/output/design_matrix_',
                                   params$ymd_preprocess, '_', 
                                   params$tag_preprocess, '.feather'))
 } else {
@@ -121,6 +123,7 @@ limpieza %<>%
          ex_train = (ex_preprocess | 
                        historia_saldo_corta_train | 
                        max_fechas_faltantes_seguidas > params$max_fechas_faltantes_seguidas) * 1)
+
 ####
 system("echo 'sum(limpieza$ex_train == 0)'")
 sum(limpieza$ex_train == 0)
@@ -137,54 +140,218 @@ colocadoras <- limpieza$pkcolocadora[limpieza$ex_train == 0]
 # sum(colocadoras %in% coloc_creditos)
 # colocadoras[!colocadoras %in% coloc_creditos]
 
-
-creditos %<>%
+creditos %<>% 
   filter(pkcolocadora %in% colocadoras) %>% 
-  group_by(pkcolocadora) %>% 
-  mutate(delta_saldo = saldoActual - lag(saldoActual), 
-         delta_prestamoPersonal = prestamoPersonal - lag(prestamoPersonal)) %>% ungroup() %>% 
-  mutate(delta_saldo = if_else(is.na(delta_saldo), 0, delta_saldo), 
-         delta_prestamoPersonal = if_else(is.na(delta_prestamoPersonal), 0, delta_prestamoPersonal))
+  mutate(porc_mora = porc_impuntual + porc_rescate) 
 # sum(creditos$fechaCorteDespues == ymd(params$ymd_preprocess))
 
-collapse_train <- creditos %>% 
-  group_by(pkcolocadora) %>% 
-  mutate(saldo_prom_decay = collapse_ts(saldoActual, halflife = params$halflife), 
-         prestamoPersonal_prom_decay = collapse_ts(prestamoPersonal, halflife = params$halflife), 
-         
-         delta_saldo_prom_decay = collapse_ts(delta_saldo, halflife = params$halflife), 
-         delta_prestamoPersonal_prom_decay = collapse_ts(delta_prestamoPersonal, halflife = params$halflife), 
-         
-         delta_saldo_sd_decay = sqrt(collapse_ts((delta_saldo - delta_saldo_prom_decay)^2, 
-                                                 halflife = params$halflife)), 
-         delta_prestamoPersonal_sd_decay = sqrt(collapse_ts((delta_prestamoPersonal - delta_prestamoPersonal_prom_decay)^2, 
-                                                            halflife = params$halflife)),
-         
-         dias_despues_fechaPago_prom_decay = collapse_ts(dias_despues_fechaPago, halflife = params$halflife), 
-         dias_despues_fechaCorte_prom_decay = collapse_ts(dias_despues_fechaCorte, halflife = params$halflife), 
-         
-         porc_puntual_prom_decay = collapse_ts(porc_puntual, halflife = params$halflife), 
-         porc_impuntual_prom_decay = collapse_ts(porc_impuntual, halflife = params$halflife), 
-         porc_rescate_prom_decay = collapse_ts(porc_rescate, halflife = params$halflife), 
-         
-         porc_puntual_sd_decay = sqrt(collapse_ts((porc_puntual - porc_puntual_prom_decay)^2, 
-                                                  halflife = params$halflife)), 
-         porc_impuntual_sd_decay = sqrt(collapse_ts((porc_impuntual - porc_impuntual_prom_decay)^2, 
-                                                    halflife = params$halflife)), 
-         porc_rescate_sd_decay = sqrt(collapse_ts((porc_rescate - porc_rescate_prom_decay)^2, 
-                                                    halflife = params$halflife)), 
-         
-         dias_puntual_prop_decay = collapse_ts((dias_despues_fechaPago <= 0), halflife = params$halflife), 
-         dias_impuntual_prop_decay = collapse_ts((dias_despues_fechaPago > 0 & dias_despues_fechaCorte < 0), halflife = params$halflife), 
-         dias_rescate_prop_decay = collapse_ts((dias_despues_fechaCorte >= 0), halflife = params$halflife) #, 
-         
-         #valeSum_prom_decay = collapse_ts(valeSum, halflife = params$halflife),
-         #valeCuenta_prom_decay = collapse_ts(valeCuenta, halflife = params$halflife), 
-         #valeProm_prom_decay = collapse_ts(valeSum / valeCuenta, halflife = params$halflife), 
-         #clienteCuenta_prom_decay = collapse_ts(clienteCuenta, halflife = params$halflife)
-         )
+system("echo '---transformando saldoActual---'")
 
-collapse_train %<>% 
+creditos %<>% 
+  group_by(pkcolocadora) %>% 
+  mutate(saldo_prom_decay = collapse_ts(saldoActual, halflife = params$halflife),
+         saldo_prom_decay3 = collapse_ts(saldoActual, halflife = 3),
+         saldo_prom4 = rollmean(saldoActual, k = 4, na.pad = TRUE, align = 'right'),
+         saldo_sd_decay3 = sqrt(collapse_ts((saldoActual - saldo_prom_decay3)^2, 
+                                                 halflife = 3))
+          ) %>% ungroup()
+
+# ggplotly( creditos %>%
+#   filter(pkcolocadora == 175) %>%
+#   select(fechaCorteAntes,
+#          saldoActual,
+#          saldo_prom_decay,
+#          saldo_prom_decay3,
+#          saldo_prom4) %>%
+#   rename(date = fechaCorteAntes) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line())
+
+creditos %<>%
+  group_by(pkcolocadora) %>%
+  mutate(diff_saldo = saldoActual - lag(saldoActual),
+         #diff_prestamoPersonal = prestamoPersonal - lag(prestamoPersonal)
+         diff_saldo = na.locf(diff_saldo, fromLast=TRUE),
+         diff_saldo_prom_decay3 = collapse_ts(diff_saldo, halflife = 3),
+         diff_saldo_sd_decay3 = sqrt(collapse_ts((diff_saldo - diff_saldo_prom_decay3)^2,
+                                                halflife = 3))
+  ) %>% ungroup()
+
+# ggplotly(creditos %>%
+#   filter(pkcolocadora == 1) %>%
+#   select(fechaCorteAntes,
+#          diff_saldo,
+#          diff_saldo_prom_decay3,
+#          diff_saldo_sd_decay3,
+#          saldo_sd_decay3) %>%
+#   rename(date = fechaCorteAntes) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line())
+
+creditos %<>% 
+  group_by(pkcolocadora) %>% 
+  mutate(delta_saldo = saldoActual / lag(saldoActual) - 1,
+         delta_saldo = na.locf(delta_saldo, fromLast=TRUE),
+         delta_saldo_prom_decay3 = collapse_ts(delta_saldo, halflife = 3), 
+         delta_saldo_sd_decay3 = sqrt(collapse_ts((delta_saldo - delta_saldo_prom_decay3)^2, 
+                                                  halflife = 3))
+  ) %>% ungroup()
+
+# ggplotly(creditos %>%
+#   filter(pkcolocadora == 175) %>%
+#   select(fechaCorteAntes,
+#          delta_saldo, 
+#          delta_saldo_prom_decay3,
+#          delta_saldo_sd_decay3) %>%
+#   rename(date = fechaCorteAntes) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line())
+
+system("echo '---transformando dias_despues_fechaPago---'")
+
+creditos %<>% 
+  group_by(pkcolocadora) %>% 
+  mutate(dias_despues_fechaPago_prom_decay = collapse_ts(dias_despues_fechaPago, halflife = params$halflife), 
+         dias_despues_fechaPago_prom_decay3 = collapse_ts(dias_despues_fechaPago, halflife = 3),
+         dias_despues_fechaPago_prom4 = rollmean(dias_despues_fechaPago, k = 4, na.pad = TRUE, align = 'right'),
+         dias_despues_fechaPago_sd_decay = sqrt(collapse_ts((dias_despues_fechaPago - dias_despues_fechaPago_prom_decay)^2, 
+                                                            halflife = params$halflife))
+         ) %>% ungroup()
+
+# ggplotly(creditos %>%
+#   filter(pkcolocadora == 175) %>%
+#   select(fechaCorteAntes,
+#          dias_despues_fechaPago,
+#          dias_despues_fechaPago_prom_decay,
+#          dias_despues_fechaPago_prom_decay3,
+#          dias_despues_fechaPago_prom4,
+#          dias_despues_fechaPago_sd_decay) %>%
+#   rename(date = fechaCorteAntes) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line())
+
+system("echo '---transformando porc_puntual---'")
+
+creditos %<>% 
+  group_by(pkcolocadora) %>% 
+  mutate(porc_puntual_prom_decay = collapse_ts(porc_puntual, halflife = params$halflife), 
+         porc_puntual_prom_decay3 = collapse_ts(porc_puntual, halflife = 3), 
+         porc_puntual_prom4 = rollmean(porc_puntual, k = 4, na.pad = TRUE, align = 'right'),
+         porc_puntual_sd_decay = sqrt(collapse_ts((porc_puntual - porc_puntual_prom_decay)^2, 
+                                                  halflife = params$halflife))
+         ) %>% ungroup()
+
+# ggplotly(creditos %>%
+#   filter(pkcolocadora == 175) %>%
+#   select(fechaCorteAntes,
+#          porc_puntual,
+#          porc_puntual_prom_decay,
+#          porc_puntual_prom_decay3,
+#          porc_puntual_prom4,
+#          porc_puntual_sd_decay) %>%
+#   rename(date = fechaCorteAntes) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line())
+
+system("echo '---transformando porc_mora---'")
+
+creditos %<>% 
+  group_by(pkcolocadora) %>% 
+  mutate(porc_mora_prom_decay = collapse_ts(porc_mora, halflife = params$halflife),
+         porc_mora_prom_decay3 = collapse_ts(porc_mora, halflife = 3),
+         porc_mora_prom4 = rollmean(porc_mora, k = 4, na.pad = TRUE, align = 'right'),
+         porc_mora_sd_decay3 = sqrt(collapse_ts((porc_mora - porc_mora_prom_decay3)^2, 
+                                                  halflife = 3))
+         ) %>% ungroup()
+
+# ggplotly(creditos %>%
+#   filter(pkcolocadora == 175) %>%
+#   select(fechaCorteAntes,
+#          porc_mora,
+#          porc_mora_prom_decay,
+#          porc_mora_prom_decay3,
+#          porc_mora_prom4,
+#          porc_mora_sd_decay3) %>%
+#   rename(date = fechaCorteAntes) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line())
+
+system("echo '---transformando dias_puntual_prop---'")
+
+creditos %<>% 
+  group_by(pkcolocadora) %>% 
+  mutate(dias_puntual_prop_decay = collapse_ts((dias_despues_fechaPago <= 0), halflife = params$halflife), 
+         dias_puntual_prop_decay3 = collapse_ts((dias_despues_fechaPago <= 0), halflife = 3),
+         dias_puntual_prop4 = rollmean((dias_despues_fechaPago <= 0), k = 4, na.pad = TRUE, align = 'right'),
+         dias_puntual_sd_decay = sqrt(collapse_ts(((dias_despues_fechaPago <= 0) - dias_puntual_prop_decay)^2, 
+                                               halflife = params$halflife))
+         ) %>% ungroup()
+
+# ggplotly(creditos %>%
+#            filter(pkcolocadora == 175) %>%
+#            select(fechaCorteAntes, 
+#                   dias_despues_fechaPago,
+#                   dias_puntual_prop_decay,
+#                   dias_puntual_prop_decay3,
+#                   dias_puntual_prop4,
+#                   dias_puntual_sd_decay) %>%
+#            rename(date = fechaCorteAntes) %>%
+#            gather(key, value,-date) %>%
+#            ggplot(aes(x = date,
+#                       y = value,
+#                       colour = key)) +
+#            geom_line())
+
+system("echo '---transformando dias_mora_prop---'")
+
+creditos %<>% 
+  group_by(pkcolocadora) %>% 
+  mutate(dias_mora_prop_decay = collapse_ts((dias_despues_fechaPago > 0), halflife = params$halflife), 
+         dias_mora_prop_decay3 = collapse_ts((dias_despues_fechaPago > 0), halflife = 3),
+         dias_mora_prop4 = rollmean((dias_despues_fechaPago > 0), k = 4, na.pad = TRUE, align = 'right'),
+         dias_mora_sd_decay3 = sqrt(collapse_ts(((dias_despues_fechaPago > 0) - dias_mora_prop_decay3)^2, 
+                                                  halflife = 3))
+  ) %>% ungroup()
+
+# ggplotly(creditos %>%
+#            filter(pkcolocadora == 175) %>%
+#            select(fechaCorteAntes,
+#                   dias_despues_fechaPago,
+#                   dias_mora_prop_decay,
+#                   dias_mora_prop_decay3,
+#                   dias_mora_prop4,
+#                   dias_mora_sd_decay3) %>%
+#            rename(date = fechaCorteAntes) %>%
+#            gather(key, value,-date) %>%
+#            ggplot(aes(x = date,
+#                       y = value,
+#                       colour = key)) +
+#            geom_line())
+
+##valeSum_prom_decay = collapse_ts(valeSum, halflife = params$halflife),
+##valeCuenta_prom_decay = collapse_ts(valeCuenta, halflife = params$halflife), 
+##valeProm_prom_decay = collapse_ts(valeSum / valeCuenta, halflife = params$halflife), 
+##clienteCuenta_prom_decay = collapse_ts(clienteCuenta, halflife = params$halflife)
+
+creditos %<>% 
   group_by(pkcolocadora) %>% 
   mutate(label_dias_despues_fechaPago_prom = get_label_prom(dias_despues_fechaPago, 
                                                             ventana_predict = params$ventana_predict), 
@@ -208,31 +375,190 @@ collapse_train %<>%
                                      params$num_lco_strikes, 
                                      na.pad = TRUE, 
                                      align = 'right') == 1) * 1
-         )
+         ) %>% 
+  ungroup()
 
+# sum(is.na(creditos$label_altoRiesgo))
+# View(creditos %>% filter(pkcolocadora == 1))
 
-# sum(is.na(collapse_train$label_altoRiesgo))
-# View(collapse_train %>% filter(pkcolocadora == 1))
-
-# collapse_train %>%
+# creditos %>%
 #   group_by(pkcolocadora) %>%
 #   mutate(sum_lco = sum(label_lco_mora_2, na.rm = TRUE)) %>%
 #   filter(sum_lco > 10) %>%
 #   select(pkcolocadora, label_lco_mora, label_lco_mora_2, dias_despues_fechaPago) %>%
 #   write_csv('label_lco_mora_2.csv')
 
-collapse_train %<>% 
-  filter(indice_preprocess >= params$min_len_predictors, 
-         indice_preprocess_desc > params$ventana_predict) %>% 
+creditos %<>%
+  filter(indice_preprocess >= params$min_len_predictors,
+         indice_preprocess_desc > params$ventana_predict) %>%
   rename(fechaCorte = fechaCorteDespues)
+
+# creditos %>% 
+#   summarize(n = n(), 
+#             impuntual = sum(label_impuntual_2) / n(), 
+#             puntual = sum(label_impuntual_2 == 0) / n())
+# 
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15, 
+#          dias_despues_fechaPago_sd_decay <= 15) %>% 
+#   summarize(n = n(), 
+#             impuntual = sum(label_impuntual_2) / n(), 
+#             puntual = sum(label_impuntual_2 == 0) / n())
  
+# creditos %>% 
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_porc_mora = mean(porc_mora, na.rm = TRUE), 
+#             portfolio_porc_mora_prom_decay = mean(porc_mora_prom_decay, na.rm = TRUE), 
+#             portfolio_porc_mora_prom_decay3 = mean(porc_mora_prom_decay3, na.rm = TRUE),
+#             portfolio_porc_mora_prom4 = mean(porc_mora_prom4, na.rm = TRUE), 
+#             portfolio_porc_mora_sd_decay3 = mean(porc_mora_sd_decay3, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+# 
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15, 
+#          dias_despues_fechaPago_sd_decay <= 15) %>% 
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_porc_mora = mean(porc_mora, na.rm = TRUE), 
+#             portfolio_porc_mora_prom_decay = mean(porc_mora_prom_decay, na.rm = TRUE), 
+#             portfolio_porc_mora_prom_decay3 = mean(porc_mora_prom_decay3, na.rm = TRUE),
+#             portfolio_porc_mora_prom4 = mean(porc_mora_prom4, na.rm = TRUE), 
+#             portfolio_porc_mora_sd_decay3 = mean(porc_mora_sd_decay3, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+
+# # los datos agregados se ven sospechosos antes de 2015
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15, 
+#          dias_despues_fechaPago_sd_decay <= 15) %>% 
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_porc_puntual = mean(porc_puntual, na.rm = TRUE), 
+#             portfolio_porc_puntual_prom_decay = mean(porc_puntual_prom_decay, na.rm = TRUE), 
+#             portfolio_porc_puntual_prom_decay3 = mean(porc_puntual_prom_decay3, na.rm = TRUE),
+#             portfolio_porc_puntual_prom4 = mean(porc_puntual_prom4, na.rm = TRUE), 
+#             portfolio_porc_puntual_sd_decay = mean(porc_puntual_sd_decay, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+# 
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15, 
+#          dias_despues_fechaPago_sd_decay <= 15, 
+#          fechaCorte >= as.Date('2014-12-31')) %>% 
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_porc_puntual = mean(porc_puntual, na.rm = TRUE), 
+#             portfolio_porc_puntual_prom_decay = mean(porc_puntual_prom_decay, na.rm = TRUE), 
+#             portfolio_porc_puntual_prom_decay3 = mean(porc_puntual_prom_decay3, na.rm = TRUE),
+#             portfolio_porc_puntual_prom4 = mean(porc_puntual_prom4, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15, 
+#          dias_despues_fechaPago_sd_decay <= 15, 
+#          fechaCorte >= as.Date('2014-12-31')) %>% 
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_dias_puntual_prop_decay = mean(dias_puntual_prop_decay, na.rm = TRUE), 
+#             portfolio_dias_puntual_prop_decay3 = mean(dias_puntual_prop_decay3, na.rm = TRUE), 
+#             portfolio_dias_puntual_prop4 = mean(dias_puntual_prop4, na.rm = TRUE), 
+#             ) %>% ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+# 
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15, 
+#          dias_despues_fechaPago_sd_decay <= 15, 
+#          fechaCorte >= as.Date('2014-12-31')) %>% 
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_dias_mora_prop_decay = mean(dias_mora_prop_decay, na.rm = TRUE), 
+#             portfolio_dias_mora_prop_decay3 = mean(dias_mora_prop_decay3, na.rm = TRUE), 
+#             portfolio_dias_mora_prop4 = mean(dias_mora_prop4, na.rm = TRUE), 
+#   ) %>% ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+# 
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15, 
+#          dias_despues_fechaPago_sd_decay <= 15, 
+#          fechaCorte >= as.Date('2014-12-31')) %>% 
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_dias_puntual_sd_decay = mean(dias_puntual_sd_decay, na.rm = TRUE), 
+#             portfolio_dias_mora_sd_decay3 = mean(dias_mora_sd_decay3, na.rm = TRUE)
+#   ) %>% ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+
+## Evaluar si se debe crear una bandera en preprocess para
+## identificar cuando dias_despues_fechaPago rebasa 15 días 
+## por primera vez y eliminar las entradas futuras
+creditos %<>%
+  filter(dias_despues_fechaPago <= 15, 
+         dias_despues_fechaPago_sd_decay <= 15, 
+         fechaCorte >= as.Date('2014-12-31'))
+
+creditos %<>% 
+  group_by(fechaCorte) %>%
+  mutate(portfolio_porc_mora_prom_decay3 = mean(porc_mora_prom_decay3, na.rm = TRUE),
+         portfolio_porc_mora_sd_decay3 = mean(porc_mora_sd_decay3, na.rm = TRUE),
+         portfolio_dias_mora_prop_decay3 = mean(dias_mora_prop_decay3, na.rm = TRUE),
+         portfolio_dias_mora_sd_decay3 = mean(dias_mora_sd_decay3, na.rm = TRUE)) %>%
+  ungroup()
+
+# creditos %>%
+#   filter(dias_despues_fechaPago <= 15,
+#          dias_despues_fechaPago_sd_decay <= 15,
+#          fechaCorte >= as.Date('2014-12-31')) %>%
+#   group_by(fechaPago) %>%
+#   summarize(portfolio_porc_mora_prom_decay3 = mean(porc_mora_prom_decay3, na.rm = TRUE),
+#             portfolio_porc_mora_sd_decay3 = mean(porc_mora_sd_decay3, na.rm = TRUE), 
+#             portfolio_dias_mora_prop_decay3 = mean(dias_mora_prop_decay3, na.rm = TRUE), 
+#             portfolio_dias_mora_sd_decay3 = mean(dias_mora_sd_decay3, na.rm = TRUE)
+#   ) %>% ungroup() %>%
+#   rename(date = fechaPago) %>%
+#   gather(key, value,-date) %>%
+#   ggplot(aes(x = date,
+#              y = value,
+#              colour = key)) +
+#   geom_line()
+              
 system("echo '===== Saving processed data ====='")
 
 if(params$bucket_s3 == "local") {
   write_csv(limpieza, paste0('/home/wrangle_train/output/limpieza_train_',
                             params$ymd_preprocess, '_', 
                             params$tag_collapse, '.csv'))
-  write_feather(collapse_train, paste0('/home/wrangle_train/output/collapse_train_',
+  write_feather(creditos, paste0('/home/wrangle_train/output/collapse_train_',
                                       params$ymd_preprocess, '_', 
                                       params$tag_collapse, '.feather'))
 } else {
@@ -242,7 +568,7 @@ if(params$bucket_s3 == "local") {
                 object = paste0('limpieza_train_',
                                 params$ymd_preprocess, '_', 
                                 params$tag_collapse, '.csv'))
-  s3write_using(collapse_train, 
+  s3write_using(creditos, 
                 FUN = write_feather, 
                 bucket = params$bucket_s3, 
                 object = paste0('collapse_train_',
