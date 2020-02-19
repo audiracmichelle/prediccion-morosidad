@@ -156,7 +156,7 @@ plot2 <- creditos %>%
 grid.arrange(plot1, plot2, nrow=2)
 ```
 
-A primera vista podemos apreciar que el porcentaje pagado no siempre suma 100%; por ahora ignoraremos esto ya en la sección \<ref\> se cubre la limpieza de datos. Poniendo atención al comportamiento de pago representado en la imagen tenemos que:
+A primera vista podemos apreciar que el porcentaje pagado no siempre suma 100%; por ahora ignoraremos esto ya que en la sección \<ref\> se cubre la limpieza de datos. Poniendo atención al comportamiento de pago representado en la imagen tenemos que:
 
 * El cliente hizo pagos puntuales en la primer mitad del año 2017. 
 * A partir de julio 2017 el cliente empieza a hacer pagos impuntuales más frecuentemente. 
@@ -183,7 +183,7 @@ A primera vista podemos apreciar que el porcentaje pagado no siempre suma 100%; 
 
 ## Limpieza de datos
 
-Probablemente el lector ya se ha preguntado si el Banco registra los datos en el formato necesario para visualizar las historias de crédito de sus clientes como en las figuras \@ref(fig:saldos) y \@ref(fig:pagos). La respuesta es -no realmente-.
+Probablemente el lector ya se ha preguntado si el Banco registra los datos en el formato necesario para visualizar las historias de crédito de sus clientes como en las figuras \@ref(fig:saldos) y \@ref(fig:pagos). La respuesta es que se tuvieron que adecuar y limpiar extensivamente los datos transaccionales del Banco.
 
 El Banco almacena la mayor parte de su información en una base de datos relacional. Esta base contiene casi 1,109 tablas. Los encargados de la base recomendaron a los científicos de datos qué tablas explorar para poder construir las historias de crédito de sus clientes. Los científicos de datos utilizaron principalmente dos tablas: 
 
@@ -194,7 +194,7 @@ Uno de los retos principales para los científicos de datos en este proyecto fue
 
 **Fechas de inicio de las tablas que contienen datos históricos**
 
-Ya que el esquema de las bases de datos del Banco ha cambiado conforme el negocio crece, se tiene que la fecha de inicio de las tablas no es la misma. La fecha de inicio de la tabla de saldos es noviembre 2008 y la fecha de inicio de la tabla de transacciones de pago es febrero 2013. Con esto, la fecha de inicio de la **tabla de historias de crédito** que construyó el equipo de científicos de datos es febrero 2013.
+Ya que el esquema de las bases de datos del Banco ha cambiado conforme el negocio crece, se tiene que la fecha de inicio de las tablas no es la misma. La fecha de inicio de la tabla de saldos es noviembre 2008 y la fecha de inicio de la tabla de transacciones de pago es febrero 2013. Con esto, la fecha de inicio de la *tabla de historias de crédito* que construyó el equipo de científicos de datos es febrero 2013.
 
 **Períodos activos de los clientes**
 
@@ -223,7 +223,7 @@ Existen clientes que dejaron de tener actividad crediticia por periodos de más 
 
 **Clasificación de abonos**
 
-La tabla de movimientos contiene registros de transacciones pero no contiene una columna en la que se clasifiquen los abonos en puntuales, impuntuales o de rescate. El primer procedimiento que se desarrolló para clasificar los abonos de cada cliente en cada corte tardaba 24 horas. Después de optimizar el uso de memoria, este procedimiento se mejoró y la última versión tarda a lo más dos minutos. 
+La tabla de movimientos contiene registros de transacciones pero no contiene una columna en la que se clasifiquen los abonos en puntuales, impuntuales o de rescate. El primer procedimiento que se desarrolló para clasificar los abonos de cada cliente en cada corte tardaba 24 horas. Después de optimizar el uso de memoria, este procedimiento se mejoró y la última versión tarda a lo más diez minutos. 
 
 **Liquidaciones**
 
@@ -233,9 +233,9 @@ En muchas ocasiones el mínimo abonado y el mínimo a pagar de los clientes no c
 
 Las series de tiempo de personas con buen historial crediticio comparten ciertos patrones, lo mismo ocurre con personas impuntuales. Debemos diseñar variables que nos permitan identificar mejor dichos patrones. Hasta este momento, entendemos el comportamiento o características de cada crédito en una fecha de corte específico. Sin embargo, esta información no nos aporta información del comportamiento de pago en el pasado.
 
-Se construyeron tres tipos de transformaciones que, a partir de las series de tiempo que conforman una historia de crédito, resumen el comportamiento pasado de un cliente. El primer tipo de transformación es un promedio ponderado que utiliza una función de decaimiento que permite asignar más peso a la historia reciente del cliente. Las otros dos transformaciones capturan la magnitud y la varianza de los cambios en las historias de crédito de los clientes. A continuación se describen a más detalle estas tres transformaciones.
+Se construyeron tres tipos de variables que, a partir de las series de tiempo que conforman una historia de crédito, resumen el comportamiento pasado de un cliente. El primer tipo de variable es un promedio ponderado que utiliza una función de decaimiento que permite asignar más peso a la historia reciente del cliente. Los otros dos tipos de variables capturan la magnitud de los cambios y la desviación estándar en las historias de crédito de los clientes. A continuación se describen a más detalle estas tres variedades.
 
-### Decaimiento geométrico y promedios móviles
+### Decaimiento Geométrico y Promedios Móviles
 
 Existen muchos métodos para obtener series de pesos con **decaimiento** que sumen uno. Con algunos métodos se obtienen pesos que decaen demasiado rápido, como el decaimiento exponencial. El **half-life** es un concepto que ayuda a controlar que tan rápido deben decaer el tamaño de los pesos.
 
@@ -247,9 +247,14 @@ Un **half-life se alcanza cuando se acumula la mitad de la suma de los pesos**. 
 
 De esta manera, series de pesos con un half-life de tres meses decaen más rápido que series de pesos con un half-life de un año.
 
-En el \<Anexo\> se incluye el detalle teórico de la construcción de pesos con *decaimiento geométrico* para lo que se utilizan, precisamente, distribuciones geométricas.
+En el \<Anexo\> se incluye el detalle teórico de la construcción de pesos con *decaimiento geométrico* para lo que se utilizan, precisamente, distribuciones geométricas. A partir de series de decaimiento geométrico generados con ese método y series de saldo de los clientes generamos las variables:
 
-A partir de las series de saldos de los clientes y series de pesos construidas con decaimiento geométrico y half-life de tres meses, generamos series de promedios móviles que guardamos en la variable `saldo_prom_decay`. La figura \@ref(fig:decaimiento) muestra un ejemplo de las serie de saldos móviles resultantes. Como se observa, el decaimiento incorpora la información del pasado en cada momento y además suaviza o elimina el ruido de la serie original.
+* `saldo_prom_decay` series de saldo con decaimiento y half-life de tres meses.
+* `saldo_prom_decay3` series de saldo con decaimiento y half-life de tres cortes.
+
+Es importante recalcar que no solo se calcularon pesos de decaimiento individualmente para cada cliente. Dado un cliente, se generaron series en cada corte cómo si se estuviera colapsando el pasado en cada paso de su recorrido de crédito. De esta manera las series que generamos son promedios móviles. Finalmente aclaramos que se determinó que para producir una predicción para un cliente, este necesitaba al menos contar con una historia de 6 periodos.
+
+La figura \@ref(fig:decaimiento) muestra un ejemplo de las serie de saldos móviles resultantes. Como se observa, el decaimiento incorpora la información del pasado en cada momento y además suaviza o elimina el ruido de la serie original. Además, podemos ver que el half-life de tres meses suaviza mucho más la serie que el half-life de tres cortes.
 
 <!-- ```{r} -->
 <!-- ejemplos <- creditos %>% -->
@@ -288,7 +293,8 @@ creditos %>%
   filter(pkcolocadora == colocadora_ej) %>%
   select(fechaCorte,
          saldoActual, 
-         saldo_prom_decay) %>% 
+         saldo_prom_decay, 
+         saldo_prom_decay3) %>% 
   rename(date = fechaCorte) %>% 
   gather(key, value,-date) %>% 
   ggplot(aes(x = date,
@@ -297,17 +303,16 @@ creditos %>%
   geom_line()
 ```
 
-
 <!-- Por otro lado, transformamos con decaimiento geométrico las series de porcentaje puntual, impuntual y rescate de los clientes con lo que generamos otras tres variables: `porc_puntual_decay`, `porc_impuntual_decay`, y `porc_rescate_decay`.  -->
 
 
-### Series de diferencias y volatilidad
+### Series de Diferencias y Desviación Estándar
 
-Al restar en cada estampa de tiempo el saldo de un cliente menos el saldo de la estampa de tiempo anterior, se obtuvieron series de diferencias en saldo. A estas series se les aplicó decaimiento para crear la variable `diff_saldo_prom_decay`. 
+Al restar en cada estampa de tiempo el saldo de un cliente menos el saldo de la estampa de tiempo anterior, se obtuvieron series de diferencias en saldo que guardamos en la variable `diff_saldo`. 
 
-Al obtener en cada estampa de tiempo la desviación estándar de las diferencias en saldo de un cliente, se obtuvieron series de volatilidad en saldo. A estas series se les aplicó decaimiento para crear la variable `diff_saldo_sd_decay`.
+En cada estampa de tiempo se calculó la desviación estándar con decaimiento del saldo de un cliente. Las series de desviaciones las asignamos a la variable `saldo_sd_decay3`.
 
-En la figura \<ref\> tenemos las series de diferencias y de volatilidades del saldo de un crédito. 
+En la figura \<ref\> tenemos las series de diferencias y de desviación estándar del saldo de un crédito. 
 
 <!-- ```{r} -->
 <!-- ejemplos <- creditos %>% -->
@@ -346,9 +351,9 @@ creditos %>%
   filter(pkcolocadora == colocadora_ej) %>%
   select(fechaCorte,
          saldoActual,
-         saldo_prom_decay,
-         diff_saldo_prom_decay,
-         diff_saldo_sd_decay) %>% 
+         saldo_prom_decay3,
+         diff_saldo,
+         diff_saldo_sd_decay3) %>% 
   rename(date = fechaCorte) %>% 
   gather(key, value,-date) %>% 
   ggplot(aes(x = date,
@@ -357,31 +362,25 @@ creditos %>%
   geom_line()
 ```
 
-En el capítulo de \<pipeline\> se explica dónde encontrar el código con el que se construyeron las variables que describimos arriba. 
+La siguiente lista muestra algunas de las variables que se generaron:
 
-Cabe recalcar que se determinó que para producir una predicción se necesitaba al menos contar con una historia de 6 periodos. Además, se produjeron transformaciones para todas las estampas de tiempo y todos los clientes.
+* `antiguedad` - antigüedad de los cliente en cada corte.
+* `saldoActual` - saldo de los cliente en cada corte.
+* `diff_saldo` - diferencias entre el valor del saldo en una fecha de corte y el saldo en la fecha de corte anterior.
+* `saldo_prom_decay` - promedios móviles del saldo histórico, ponderados con decaimiento geométrico y half-life de tres meses.
+* `saldo_prom_decay3` - promedios móviles del saldo histórico, ponderados con decaimiento geométrico y half-life de tres cortes.
+* `saldo_sd_decay3` - desviación estándar del saldo histórico de un cliente, ponderado con decaimiento geométrico y half-life de tres cortes.
+* `dias_despues_fechaPago` - momento de pago de los cliente en cada corte.
+* `dias_despues_fechaPago_prom_decay3` - promedios móviles del momento de pago histórico, ponderado con decaimiento geométrico y half-life de tres cortes.
+* `porc_puntual` - porcentaje puntual del pago de los clientes en cada corte.
+* `porc_mora` - suma del porcentaje impuntual y de rescate en el pago de los clientes en cada corte.
+* `porc_mora_prom_decay3` - promedios móviles (con decaimiento geométrico y half-life de tres cortes) del porcentaje en mora de los pagos.
 
-Con esto, la siguiente lista muestra todas las variables que se utilizaron en la selección de modelos. Cada variable contiene información de crédito de un cliente en una fecha de corte específica:
-
-* `antiguedad` - antigüedad del cliente a la fecha de corte.
-* `saldoActual` - saldo que presenta el cliente a la fecha de corte.
-* `delta_saldo` - diferencia entre el valor del saldo que presenta el cliente a la fecha de corte y el saldo en la fecha de corte anterior.
-* `saldo_prom_decay` - promedio del saldo histórico del cliente, ponderado con decaimiento geométrico a la fecha de corte.
-* `dias_despues_fechaPago_prom_decay` - promedio del momento de pago del cliente, ponderado con decaimiento geométrico a la fecha de corte.
-* `porc_puntual_prom_decay` - promedio (con decaimiento geométrico a la fecha de corte) del porcentaje puntual en los pagos del cliente.
-* `porc_impuntual_prom_decay` - promedio (con decaimiento geométrico a la fecha de corte) del porcentaje impuntual en los pagos del cliente.
-* `porc_rescate_prom_decay` - promedio (con decaimiento geométrico a la fecha de corte) del porcentaje en rescate en los pagos del cliente.
-* `dias_puntual_prop_decay` - proporción (con decaimiento geométrico a la fecha de corte) de cortes con abonos puntuales.
-* `dias_impuntual_prop_decay` - proporción (con decaimiento geométrico a la fecha de corte) de cortes con abonos impuntuales.
-* `dias_rescate_prop_decay` - proporción (con decaimiento geométrico a la fecha de corte) de cortes con abonos en rescate.
-* `delta_saldo_prom_decay` - promedio de los cambios en el saldo de la colocadora, ponderado con decaimiento geométrico a la fecha de corte.
-* `delta_saldo_sd_decay` - desviación standard (con decaimiento geométrico a la fecha de corte) de los cambios en el saldo de la colocadora.
-* `porc_puntual_sd_decay` - desviación standard (con decaimiento geométrico a la fecha de corte) del porcentaje puntual de los pagos del cliente.
-* `porc_impuntual_sd_decay` - desviación standard (con decaimiento geométrico a la fecha de corte) del porcentaje impuntual de los pagos del cliente.
+En el Anexo \<ref\> se incluye la lista completa de variables que se utilizaron en la selección de modelos. En github \<ref\> se encuentra el código con el que se construyeron esas variables. 
 
 ### Etiquetas 
 
-Recordemos que el indicador de impuntualidad debe predecir si, en los siguientes tres cortes, el momento de pago de un cliente cae en la cola amarilla y roja del tríangulo de pagos. 
+Recordemos que en el capítulo \<ref\> se dijo que el indicador de impuntualidad debe predecir si, en los siguientes tres cortes, el momento de pago de un cliente cae en la cola amarilla y roja del tríangulo de pagos. 
 
 De acuerdo con lo que los representantes del Banco les explicaron a los científicos de datos, es común que los clientes se atrasen uno o dos días en sus pagos por algún contratiempo sin representar un riesgo. Por esto, conjuntamente se decidió que la etiqueta de un cliente en $t$ debía considerar el promedio de los momentos de pago de los siguientes tres cortes $t+1$, $t+2$ y $t+3$; y que la etiqueta sería 1 si el promedio es mayor a 2 y 0 en los demás casos.
 
@@ -391,7 +390,7 @@ De acuerdo con lo que los representantes del Banco les explicaron a los científ
 <!-- * El promedio de los momentos de pago de los siguientes tres cortes es xxx. -->
 <!-- * La etiqueta de impuntualidad correspondiente al cliente $y$ en la fecha de pago 0 tiene un valor de 1.  -->
 
-Los promedios de los momentos de pago en los tres cortes siguientes los guardamos en `label_dias_despues_fechaPago_prom` y las etiquetas de impuntualidad las guardamos en la variable `label_impuntual_2`. 
+Se calcularon los promedios de los momentos de pago en los tres cortes siguientes en cada corte y las etiquetas de impuntualidad las guardamos en la variable `label_impuntual_2`.
 
 ## Selección de Modelos
 
@@ -401,14 +400,14 @@ Lo primero que trataremos en esta sección es el cross-validation que se utiliz�
 * Conjunto de validación - los datos entre `2017-07-01` y `2017-12-31` acumulando el 16% del total.
 * Conjunto de prueba - los datos después de `2018-01-01` que acumulan el 16% del total.
 
-Como se mencionó en la Sección \<ref\> la proporción de positivos y negativos en las etiquetas históricas es de 90.3% y 7.7%. Las proporciones en los tres conjuntos de cross-validation se mantuvieron muy cerca de estos valores.
+Como se mencionó en la Sección \<ref\> la proporción de positivos y negativos en las etiquetas históricas es de 90.3% y 9.7%. Las proporciones en los tres conjuntos de cross-validation se mantuvieron muy cerca de estos valores.
 
 Es claro que estamos tratando con el entrenamiento de un modelo supervisado de clasificación y que es posible probar diferentes modelos como regresión logística, bosques aleatorios o gradient boosting classifiers. Los científicos de datos probaron distintas combinaciones de modelos, hiperparámetros y de variables. El modelo que resultó tener mayor valor predictivo para el Banco fue el Gradient Boosting Classifier. Más sobre la elección de este algoritmo se cubre adelante.
 
-Hagamos un ejercicio visual simple que nos permita ver cómo las transformaciones que hicimos a las variables ayudan a capturar los patrones de pago futuro de los clientes. La figura \<ref\> contiene dos gráficas de componentes principales. La diferencia en las gráficas es que los puntos se generaron con distintas matrices de rotación:
+Hagamos un ejercicio visual simple que nos permita ver cómo el decaimiento ayuda a capturar el patrones de pago de los clientes. La figura \<ref\> contiene dos gráficas de componentes principales. La diferencia en las gráficas es que los puntos se generaron con distintas matrices de rotación:
 
-* En el recuadro de la derecha se construyó la matriz de rotación con cuatro variables de datos crudos: `antiguedad`, `saldoActual`, `dias_despues_fechaPago`, y `porc_puntual`. 
-* En el recuadro de la izquierda se construyó la matriz de rotación con las siguientes variables: `antiguedad`, `saldo_prom_decay`, `delta_saldo_prom_decay`, `delta_saldo_sd_decay`, `porc_puntual_prom_decay`, `porc_puntual_sd_decay`, y `dias_puntual_prop_decay`. Como vemos, este segundo grupo de variables incluye decaimientos, diferencias y volatilidades. 
+* En el recuadro de la derecha se construyó la matriz de rotación con cuatro variables que solo consideran el último corte observado: `antiguedad`, `saldoActual`, `diff_saldo`, `dias_despues_fechaPago`, y `porc_puntual`. 
+* En el recuadro de la izquierda se construyó la matriz de rotación con variables que incorporan información del pasado con decaimiento: `antiguedad`, `saldo_prom_decay3`, `dias_despues_fechaPago_prom_decay3`, `porc_puntual_prom_decay`, y `porc_puntual_sd_decay`. 
 
 Los puntos en azul claro representan entradas con etiquetas de impuntualidad positivas, los puntos en azul obscuro tienen etiquetas negativas.
 
@@ -419,7 +418,7 @@ train <- which(creditos$fechaCorte <= as.Date("2017-12-31"))
 test <- which(creditos$fechaCorte > as.Date("2017-12-31"))
 sampling <- sample(nrow(creditos[test, ]), 300)
 
-cols <- c('antiguedad', 'saldo_prom_decay', 'delta_saldo_prom_decay', 'delta_saldo_sd_decay', 'porc_puntual_prom_decay', 'porc_puntual_sd_decay', 'dias_puntual_prop_decay')
+cols <- c('antiguedad', 'saldo_prom_decay3', 'porc_puntual_prom_decay', 'porc_puntual_sd_decay')
 
 df_train <- creditos[train, ] %>% 
   select(cols) %>% 
@@ -440,7 +439,7 @@ p1 <- rot_df_test[sampling, ] %>%
   ggplot(aes(x=PC1, y=PC2, colour=label_impuntual_2)) + 
   geom_point(alpha=0.75) + theme(legend.position = "none")
 
-cols <- c('antiguedad', 'saldoActual','dias_despues_fechaPago','porc_puntual')
+cols <- c('antiguedad', 'saldoActual', 'diff_saldo','porc_puntual')
 
 df_train <- creditos[train, ] %>% 
   select(cols) %>% 
@@ -464,36 +463,68 @@ p2 <- rot_df_test[sampling, ] %>%
 grid.arrange(p1, p2, ncol=2)
 ```
 
-Los puntos claros se separan más de los puntos obscuros en el recuadro izquierdo que en el recuadro derecho. Esto nos da señales de que el decaimiento, las diferencias y las volatilidades capturan información sobre el pago futuro de los clientes que no nos proporcionan los datos crudos de los créditos.
+Los puntos claros se separan más de los puntos obscuros en el recuadro izquierdo que en el recuadro derecho. Esto nos da señales de que el decaimiento capturan información sobre el pago futuro de los clientes que no nos proporcionan los datos puntuales de los créditos.
 
-Por otro lado, veamos los resultados de dos regresiones logísticas con regularización L2. La primer regresión logística se ajustó sobre el grupo de variables de datos crudos, y la segunda regresión logística sobre el grupo de variables de datos transformados.
+Por otro lado, veamos los resultados de tres bosques aleatorios. El primero `short` se ajustó sobre un grupo de variables de datos puntuales, el segundo `mid` sobre un grupo de variables de datos con decaimiento y el tercero `long` con variables tanto puntuales como con decaimiento. En la figura \<ref\> tenemos sus curvas de precision-recall.
 
-se matriz de confusión de 
+```{r, precision-recall, echo=FALSE, out.width="80%", fig.align="center", fig.pos="H", fig.cap="Curvas de precision-recall"}
+knitr::include_graphics("./images/precision-recall.png")
+```
+
+Finalmente, veamos la curva roc de tres algoritmos de clasificación: regresión logística con penalización L2, bosque aleatorio y gradient boosting classifier. Los tres algoritmos fueron entrenados sobre el conjunto de datos `long` con variables de datos puntuales y con decaimiento.
+
+```{r, roc, echo=FALSE, out.width="80%", fig.align="center", fig.pos="H", fig.cap="Curvas roc de tres algoritmos"}
+knitr::include_graphics("./images/roc.png")
+```
+
+Con esto, ejemplificamos el proceso de selección de modelos que realizaron los científicos de datos. El Gradient Boosting Classifier es el que alcanza el mejor desempeño.
 
 <!-- Ahora incorporemos la etiqueta `label_dias_despues_fechaPago_prom` y otras variables al cálculo de componentes principales para obtener la gráfica de *loadings* que apreciamos en la figura \<ref\>. A partir de esta gráfica podemos decir que las dos direcciones de mayor varianza en nuestros datos se pueden interpretar como En esta gráfica vemos que la primer componente principal está más influenciada por   -->
-y por sus propiedades se utilizaron todas las variables.
 
-Podríamos presentar y comparar los diferentes poderes predictivos que obtuvieron los científicos de datos con los diferentes modelos, en su lugar, daremos buenas razones de porqué elegir el gdb que supera a los demás modelos.
+<!-- Podríamos presentar y comparar los diferentes poderes predictivos que obtuvieron los científicos de datos con los diferentes modelos, en su lugar, daremos buenas razones de porqué elegir el gdb que supera a los demás modelos. -->
 
-
-
-Aunque las variables que se diseñaron describen diferentes partes de una historia de crédito, estás variables están muy correlacionadas. En la figura <\ref\> tenemos el heat-map de la correlación de algunas de las variables.
-
-<xxx>
-
-Tomando esto en cuenta podríamos pensar que una regresión lo´gi 
-
-
-
-## Selección de Variables
-
-## Selección de Hiperparámetros
-
-decir qué hiperparámetros se probaron
+<!-- Aunque las variables que se diseñaron describen diferentes partes de una historia de crédito, estás variables están muy correlacionadas. En la figura <\ref\> tenemos el heat-map de la correlación de algunas de las variables. -->
 
 ## Desempeño del Modelo
 
+En la sección \<ref\> sobre métricas de validación, establecimos que para aprobar un modelo, este debía alcanzar un recall de 50% y una especificidad de 93%. A continuación mostramos las métricas de desempeño del modelo puesto en producción.
 
+Ya mencionamos que el modelo elegido fue un Gradient Boosting Classifier. Este tipo de algoritmo realmente no requiere que se elija un subconjunto de variables \<bib\>, por lo que este se entrenó con todo el conjunto de variables que presentamos en el Anexo \<ref\>. La selección de hiperparámetros consistió basicamente en elegir la profundidad de los árboles con un grid. El número de árboles quedó determinado por el early stopping que está incorporado al algoritmo utilizado.
 
-Ahora vamos a describir los pasos que se siguieron para hacer la selección de modelos. 
-aunque no se mencionó antes, uno de los hiperparámetros era el half-life del decaimiento 
+A continuación mostramos diferentes medidas desempeño del modelo y corte (threshold) elegidos. Por corte nos referimos al valor a partir del cual se le asigna a la predicción el valor de uno o cero.  
+
+* Matriz de confusión
+
+|                |          | **actual**                 |
+|----------------|----------|--------------|-------------|
+|                |          |   positivo   |  negativo   |
+| **predicción** | positivo |      5%      |     2.7%    |
+|                | negativo |      5%      |    87.3%    |
+
+* recall 50% - Este nivel de recall cumple con las expectativas establecidas por las métricas de validación. 
+* precision 65.3% - Ya que el objetivo del modelo de predicción es accionar estrategias de cobranza correctivas es importante tomar en cuenta cuántos recursos se destinan a este esfuerzo. En ese sentido es importante considerar la precisión del modelo elegido para evitar gastos innecesarios.
+* accuracy 92.3% - Este nivel de accuracy excede lo requerido satisfactoriamente.
+
+Después de que el Banco aprobó el desempeño del modelo entrenado, se refactorizó el código y se puso en producción un pipeline de datos. De esta manera se empezaron a producir indicadores de impuntualidad para los clientes activos. 
+
+Además, se empezó a generar el monto en riesgo que equivale al indicador de impuntualidad de los clientes multiplicados por su saldo. Con esto se facilitó priorizar los esfuerzos de cobranza correctiva y enfocar recursos en aquellos clientes con mayor monto en riesgo. 
+
+Finalmente, presentamos las variables que tienen mayor poder predictivo para el Gradient Boosting Clasifier en el orden de su importancia. La segunda y tercer columnas contienen el valor de las medianas de estas variables en el grupo con etiqueta positiva y en el grupo con etiqueta negativa.
+
+|Variable                            |etiqueta positiva|etiqueta negativa|
+|------------------------------------|-----------------|-----------------|
+|`dias_despues_fechaPago_prom_decay3`|1.23             |-0.7             |
+|`dias_despues_fechaPago`            |1                |0                |
+|`porc_mora_prom_decay3`             |0.35             |0                |
+|`porc_puntual_prom_decay3`          |0.68             |1.04             |
+|`porc_puntual`                      |0.56             |1.04             |
+|`saldoActual`                       |54,848           |54,290           |
+|`antiguedad`                        |397              |548              |
+
+Con esto podemos decir que `dias_despues_fechaPago_prom_decay3` el promedio con decaimiento de los momentos de pago es la variable que más explica el comportamiento futuro de pago de los clientes. Como era de esperarse, si un cliente se ha atrasado en sus pagos en el pasado, es probable que vuelva a ser impuntual en el futuro.
+
+# Conclusiones
+
+Xxx
+
+<!-- segunda iteración de este proyecto se predijo el impago definitivo. El modelo resultante le da más peso a la desviación estándar y las diferencias.  -->
