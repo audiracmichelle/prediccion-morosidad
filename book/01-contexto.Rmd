@@ -30,7 +30,7 @@ En este trabajo no revelaremos la razón social de la SOFOM en estudio y de aqu�
 
 Aunque el Banco no otorga créditos de forma directa en sucursal; tampoco se trata de un negocio de e-lending. La forma en que el Banco presta es a través de comisionistas. No nos concentraremos en explicar la relación entre los comisionistas y el Banco ya que, para nuestros fines, la podemos entender simplemente como la relación de un acreedor con un deudor en un contrato de crédito. Por esto, nos referimos a los comisionistas como *clientes* o *acreditados*.
 
-Los créditos que el Banco otorga a sus clientes son de tipo *revolvente*. A diferencia de los créditos tradicionales en los que se presta un valor inicial y se acuerda un plazo y pagos fijos para saldar la deuda, los créditos revolventes cuentan con un límite y los clientes pueden disponer del crédito cuando lo requieren.
+Los créditos que el Banco otorga a sus clientes son de tipo *revolvente*. A diferencia de los créditos tradicionales en los que se presta un valor inicial y se acuerda un plazo y pagos fijos para saldar la deuda, a los créditos revolventes se les atribuye un saldo límite y los clientes pueden disponer del crédito cuando lo requieren.
 
 El Banco guarda la información transaccional de sus clientes y, de acuerdo a una evaluación hecha por un equipo de científicos de datos, cuenta con una **madurez de datos** suficiente para incorporar pipelines de aprendizaje de máquina a sus procesos. 
 
@@ -97,11 +97,11 @@ De acuerdo con los científicos de datos, el indicador de impuntualidad debía s
 
 ## Mecanismo de Validación
 
-En la sección \<ref\> se detalla como se construyó la etiqueta de impuntualidad con la que se entrenaron modelos supervisados. Por ahora nos basta saber que se obtuvieron etiquetas para cada cliente y para cada corte en los datos históricos del Banco y con esto se obtuvo que el 87.85% de los casos históricos son negativos y el 12.15% positivos.
+En la sección \<ref\> se detalla como se construyó la etiqueta de impuntualidad con la que se entrenaron modelos supervisados. Por ahora nos basta saber que se obtuvieron etiquetas para cada cliente y para cada corte en los datos históricos del Banco y con esto se obtuvo que el 90.3% de los casos históricos son negativos y el 9.7% positivos.
 
 Para nuestro problema de clasificación es posible utilizar cualquiera de los siguientes modelos base: la **regla cero** (zero rule, 0R or ZeroR) o el **muestreo aleatorio**. La regla cero consiste en asignar una predicción "cero" en todos los casos.
 
-Calculando las métricas de desempeño teóricas para la regla cero tenemos un *accuracy* de 87.85%, un *recall* de 0% y una *especificidad* de 100%. La *matriz de confusión* (condicionada al actual) correspondiente es: 
+Calculando las métricas de desempeño teóricas para la regla cero tenemos un *accuracy* de 90.3%, un *recall* de 0% y una *especificidad* de 100%. La *matriz de confusión* (condicionada al actual) correspondiente es: 
 
 |                |          | **actual**            |
 |----------------|----------|-----------|-----------|
@@ -109,15 +109,15 @@ Calculando las métricas de desempeño teóricas para la regla cero tenemos un *
 | **predicción** | positivo |     0     |    0      |
 |                | negativo | 100%      | 100%      |
 
-Para las métricas de desempeño teóricas del muestreo aleatorio tenemos un accuracy de 78.65% (0.8785 \* 0.8785 + 0.1215 \* 0.1215), un recall de 12.15%, una especificidad de 87.85% y la siguiente matriz de confusión (condicionada al actual): 
+Para las métricas de desempeño teóricas del muestreo aleatorio tenemos un accuracy de 82.48% (0.903 \* 0.903 + 0.097 \* 0.097), un recall de 9.7%, una especificidad de 90.3% y la siguiente matriz de confusión (condicionada al actual): 
 
 |                |          | **actual**                 |
 |----------------|----------|--------------|-------------|
 |                |          |   positivo   |  negativo   |
-| **predicción** | positivo |  12.15%      |   12.15%    |
-|                | negativo |  87.85%      |   87.85%    |
+| **predicción** | positivo |    9.7%      |     9.7%    |
+|                | negativo |   90.3%      |    90.3%    |
 
-Al contar con estos valores de referencia se estableció que para ponerse en producción el indicador de impuntualidad, este debía alcanzar al menos un nivel de recall de 50% y de especificidad de 90%. El accuracy correspondiente a estos valores de recall y especificidad es de 85% (0.8785 \* 0.9 + 0.1215 \* 0.5).
+Al contar con estos valores de referencia se estableció que para ponerse en producción el indicador de impuntualidad, este debía alcanzar al menos un nivel de recall de 50% y de especificidad de 93%. El accuracy correspondiente a estos valores de recall y especificidad es de 88.55% (0.93 \* 0.9 + 0.097 \* 0.5).
 
 ## Plan de Trabajo
 
@@ -127,13 +127,13 @@ El entregable del proyecto consistía en un pipeline de datos para actualizar ca
 
 2. **Feature engineering** se transformaron todas las variables explicativas para que capturaran el comportamiento pasado de los acreditados usando *promedios móviles con decaimiento exponencial*.
 
-3. **Model selection** se probaron distintos modelos de clasificación y se determinaron los mejores hiperparámetros, entre ellos el *halflife* del decaimiento exponencial.
+3. **Model selection** se probaron distintos algoritmos de clasificación y se determinaron los mejores hiperparámetrosl.
 
 4. **Code refactoring** se factorizó el código y se crearon contenedores para cada una de las tareas del pipeline.
 
 Además, se trabajó con ingenieros de datos que estuvieron encargados del **ETL** y del **pipeline testing**. Para el ETL se desarrollaron los procesos de extracción de datos que alimentan al resto de las tareas. Durante el pipeline testing se validaron los resultados que produce el pipeline y se probó con el Banco el funcionamiento de la entrega.
 
-En el siguiente capítulo describiremos las etapas 1 a 4 de este plan de trabajo. Cabe mencionar que el plan de trabajo de este proyecto también contempla etapas que no se cubren en este documento. En esas etapas se dió seguimiento al efecto de las acciones de cobranza preventiva que el Banco implementó a partir de los indicadores de riesgo que se desarrollaron. 
+En el siguiente capítulo describiremos las etapas 1 a 3 de este plan de trabajo. Cabe mencionar que el plan de trabajo de este proyecto también contempla etapas que no se cubren en este documento. En esas etapas se dió seguimiento al efecto de las acciones de cobranza preventiva que el Banco implementó a partir de los indicadores de riesgo que se desarrollaron. 
 
 ## Contacto
 

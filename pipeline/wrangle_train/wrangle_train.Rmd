@@ -1,0 +1,250 @@
+---
+title: "wrangle_train.R"
+output: html_document
+---
+
+```{r}
+creditos <- read_feather('./output/collapse_train_20200202_dev.feather')
+```
+
+```{r}
+ggplotly( creditos %>%
+  filter(pkcolocadora == 175) %>%
+  select(fechaCorteAntes,
+         saldoActual,
+         saldo_prom_decay,
+         saldo_prom_decay3,
+         saldo_prom4) %>%
+  rename(date = fechaCorteAntes) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line())
+```
+
+```{r}
+ggplotly(creditos %>%
+  filter(pkcolocadora == unique(creditos$pkcolocadora)[2000]) %>%
+  select(fechaCorteAntes,
+         diff_saldo,
+         diff_saldo_prom_decay3,
+         diff_saldo_sd_decay3,
+         saldo_sd_decay3) %>%
+  rename(date = fechaCorteAntes) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line())
+```
+
+```{r}
+ggplotly(creditos %>%
+  filter(pkcolocadora == unique(creditos$pkcolocadora)[2000]) %>%
+  select(fechaCorteAntes,
+         delta_saldo,
+         delta_saldo_prom_decay3,
+         delta_saldo_sd_decay3) %>%
+  rename(date = fechaCorteAntes) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line())
+```
+
+```{r}
+ggplotly(creditos %>%
+  filter(pkcolocadora == 175) %>%
+  select(fechaCorteAntes,
+         dias_despues_fechaPago,
+         dias_despues_fechaPago_prom_decay,
+         dias_despues_fechaPago_prom_decay3,
+         dias_despues_fechaPago_prom4,
+         dias_despues_fechaPago_sd_decay) %>%
+  rename(date = fechaCorteAntes) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line())
+```
+
+```{r}
+ggplotly(creditos %>%
+  filter(pkcolocadora == 175) %>%
+  select(fechaCorteAntes,
+         porc_puntual,
+         porc_puntual_prom_decay,
+         porc_puntual_prom_decay3,
+         porc_puntual_prom4,
+         porc_puntual_sd_decay) %>%
+  rename(date = fechaCorteAntes) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line())
+```
+
+```{r}
+ggplotly(creditos %>%
+  filter(pkcolocadora == 175) %>%
+  select(fechaCorteAntes,
+         porc_mora,
+         porc_mora_prom_decay,
+         porc_mora_prom_decay3,
+         porc_mora_prom4,
+         porc_mora_sd_decay3) %>%
+  rename(date = fechaCorteAntes) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line())
+```
+
+```{r}
+ggplotly(creditos %>%
+           filter(pkcolocadora == 175) %>%
+           select(fechaCorteAntes,
+                  dias_despues_fechaPago,
+                  dias_puntual_prop_decay,
+                  dias_puntual_prop_decay3,
+                  dias_puntual_prop4,
+                  dias_puntual_sd_decay) %>%
+           rename(date = fechaCorteAntes) %>%
+           gather(key, value,-date) %>%
+           ggplot(aes(x = date,
+                      y = value,
+                      colour = key)) +
+           geom_line())
+```
+
+```{r}
+ggplotly(creditos %>%
+           filter(pkcolocadora == 175) %>%
+           select(fechaCorteAntes,
+                  dias_despues_fechaPago,
+                  dias_mora_prop_decay,
+                  dias_mora_prop_decay3,
+                  dias_mora_prop4,
+                  dias_mora_sd_decay3) %>%
+           rename(date = fechaCorteAntes) %>%
+           gather(key, value,-date) %>%
+           ggplot(aes(x = date,
+                      y = value,
+                      colour = key)) +
+           geom_line())
+```
+
+```{r}
+creditos %>%
+  group_by(fechaPago) %>%
+  summarize(portfolio_porc_mora = mean(porc_mora, na.rm = TRUE),
+            portfolio_porc_mora_prom_decay = mean(porc_mora_prom_decay, na.rm = TRUE),
+            portfolio_porc_mora_prom_decay3 = mean(porc_mora_prom_decay3, na.rm = TRUE),
+            portfolio_porc_mora_prom4 = mean(porc_mora_prom4, na.rm = TRUE),
+            portfolio_porc_mora_sd_decay3 = mean(porc_mora_sd_decay3, na.rm = TRUE)) %>%
+  ungroup() %>%
+  rename(date = fechaPago) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line()
+```
+
+```{r}
+creditos %>%
+  filter(dias_despues_fechaPago <= 15,
+         dias_despues_fechaPago_sd_decay <= 15,
+         fechaCorte >= as.Date('2014-12-31')) %>%
+  group_by(fechaPago) %>%
+  summarize(portfolio_porc_puntual = mean(porc_puntual, na.rm = TRUE),
+            portfolio_porc_puntual_prom_decay = mean(porc_puntual_prom_decay, na.rm = TRUE),
+            portfolio_porc_puntual_prom_decay3 = mean(porc_puntual_prom_decay3, na.rm = TRUE),
+            portfolio_porc_puntual_prom4 = mean(porc_puntual_prom4, na.rm = TRUE)) %>%
+  ungroup() %>%
+  rename(date = fechaPago) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line()
+```
+
+```{r}
+creditos %>%
+  filter(dias_despues_fechaPago <= 15,
+         dias_despues_fechaPago_sd_decay <= 15,
+         fechaCorte >= as.Date('2014-12-31')) %>%
+  group_by(fechaPago) %>%
+  summarize(portfolio_dias_puntual_prop_decay = mean(dias_puntual_prop_decay, na.rm = TRUE),
+            portfolio_dias_puntual_prop_decay3 = mean(dias_puntual_prop_decay3, na.rm = TRUE),
+            portfolio_dias_puntual_prop4 = mean(dias_puntual_prop4, na.rm = TRUE),
+            ) %>% ungroup() %>%
+  rename(date = fechaPago) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line()
+```
+
+```{r}
+creditos %>%
+  filter(dias_despues_fechaPago <= 15,
+         dias_despues_fechaPago_sd_decay <= 15,
+         fechaCorte >= as.Date('2014-12-31')) %>%
+  group_by(fechaPago) %>%
+  summarize(portfolio_dias_mora_prop_decay = mean(dias_mora_prop_decay, na.rm = TRUE),
+            portfolio_dias_mora_prop_decay3 = mean(dias_mora_prop_decay3, na.rm = TRUE),
+            portfolio_dias_mora_prop4 = mean(dias_mora_prop4, na.rm = TRUE),
+  ) %>% ungroup() %>%
+  rename(date = fechaPago) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line()
+```
+
+```{r}
+creditos %>%
+  filter(dias_despues_fechaPago <= 15,
+         dias_despues_fechaPago_sd_decay <= 15,
+         fechaCorte >= as.Date('2014-12-31')) %>%
+  group_by(fechaPago) %>%
+  summarize(portfolio_dias_puntual_sd_decay = mean(dias_puntual_sd_decay, na.rm = TRUE),
+            portfolio_dias_mora_sd_decay3 = mean(dias_mora_sd_decay3, na.rm = TRUE)
+  ) %>% ungroup() %>%
+  rename(date = fechaPago) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line()
+```
+
+
+```{r}
+creditos %>%
+  filter(dias_despues_fechaPago <= 15,
+         dias_despues_fechaPago_sd_decay <= 15,
+         fechaCorte >= as.Date('2014-12-31')) %>%
+  group_by(fechaPago) %>%
+  summarize(portfolio_porc_mora_prom_decay3 = mean(porc_mora_prom_decay3, na.rm = TRUE),
+            portfolio_porc_mora_sd_decay3 = mean(porc_mora_sd_decay3, na.rm = TRUE),
+            portfolio_dias_mora_prop_decay3 = mean(dias_mora_prop_decay3, na.rm = TRUE),
+            portfolio_dias_mora_sd_decay3 = mean(dias_mora_sd_decay3, na.rm = TRUE)
+  ) %>% ungroup() %>%
+  rename(date = fechaPago) %>%
+  gather(key, value,-date) %>%
+  ggplot(aes(x = date,
+             y = value,
+             colour = key)) +
+  geom_line()
+```
+

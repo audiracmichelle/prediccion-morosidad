@@ -38,9 +38,13 @@ library(feather)
 library(tidyverse)
 library(mltools)
 library(gridExtra)
+library(magrittr)
 
-creditos <- read_feather('../pipeline/wrangle_train/output/collapse_train_20180823_prod.feather')
 design_matrix <- read_feather('../pipeline/preprocess/output/design_matrix_20180823_prod.feather')
+design_matrix %<>%
+  filter(pkcolocadora == 21160)
+
+creditos <- read_feather('../pipeline/wrangle_train/output/collapse_train_20200202_dev.feather')
 limpieza <- read_csv('../pipeline/wrangle_train/output/limpieza_train_20180823_prod.csv')
 ```
 
