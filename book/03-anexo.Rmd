@@ -52,7 +52,7 @@ No existe una solución analítica para $p$, pero podemos obtener soluciones num
  
 Supongamos que tenemos $T = 1000$ y $m = 45$, **¿bajo qué $p$ la distribución de $Y$ acumula $0.5$ en $m$?** La solución es $p=0.0153$ como se muestra en la \@ref(fig:pesos).
 
-```{r, pesos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="La solución p"}
+```{r, pesos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="La solución p", out.width="50%"}
 T = 1000
 m = 45
 
@@ -75,7 +75,7 @@ Con esto, proponemos la serie de pesos $w$ tal que
 
 En la figura \@ref(fig:geometricos) se muestra la serie de pesos con decaimento geométrico con $T = 1000$ y $m = 45$. La línea vertical se encuentra sobre el half-life $m$ donde se acumula el 50% de los pesos.
 
-```{r, geometricos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Ejemplo con T = 1000 y m = 45"}
+```{r, geometricos, echo=FALSE, fig.align="center", fig.pos="H", fig.cap="Ejemplo con T = 1000 y m = 45", out.width="50%"}
 k <- 1:T
 w <- p * (1-p)^{k-1} / (1-(1-p)^T)
 plot(w, type = 'l')

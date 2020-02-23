@@ -533,7 +533,7 @@ Dividimos el conjunto de prueba en diez subconjuntos, validamos que el tamaño d
 
 Si hacemos lo mismo con el recall, el intervalo resultante va del 37% al 59%. Como vemos, la métrica de recall tiene más varianza que la de precisión y esto es información muy valiosa. En la figura \@ref(fig:t-student) incluimos la distribución empírica y la teórica que se ajustó.
 
-```{r, t-student, echo=FALSE, out.width="80%", fig.align="center", fig.pos="H", fig.cap="Curvas roc de tres algoritmos"}
+```{r, t-student, echo=FALSE, out.width="50%", fig.align="center", fig.pos="H", fig.cap="Curvas roc de tres algoritmos"}
 knitr::include_graphics("./images/t_student.png")
 ```
 
