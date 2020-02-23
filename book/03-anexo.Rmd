@@ -4,7 +4,7 @@
 
 # Anexo
 
-## Decaimento Geométrico
+## Decaimento Geométrico{#decaimiento}
 
 Aquí presentaremos un método para obtener series diarias de pesos monotónicos decrecientes con un half-life de $m$ días. Esto significa que buscamos una serie $w = (w^T, w^{T-1}, \dots, w^1)$ de pesos diarios tal que $w^t \geq w^{t-1}$, $\sum w^t = 1$ y que además se cumplan dos condiciones:
 
@@ -81,3 +81,30 @@ w <- p * (1-p)^{k-1} / (1-(1-p)^T)
 plot(w, type = 'l')
 abline(v=m, col = "red")
 ```
+
+## Lista de Variables{#features}
+
+A continuación listamos las veinte variables con las que se entrenó el Gradient Boosting Classifier cuyas predicciones arrojaron el mejor desempeño.
+
+* `antiguedad` - antigüedad de los cliente en cada corte. 
+* `saldoActual` - saldo de los cliente en cada corte.
+* `saldo_prom_decay3` - promedios móviles del saldo histórico, ponderados con decaimiento geométrico y half-life de tres cortes.
+* `saldo_sd_decay3` - desviaciones estándar de los saldos históricos, ponderados con decaimiento geométrico y half-life de tres cortes.
+* `diff_saldo` - diferencias entre el valor del saldo en una fecha de corte y el saldo en la fecha de corte anterior. 
+* `diff_saldo_prom_decay3` - promedios móviles de las diferencias en el saldo, ponderados con decaimiento geométrico y half-life de tres cortes.
+* `diff_saldo_sd_decay3` - desviaciones estándar de las diferencias en el saldo, ponderados con decaimiento geométrico y half-life de tres cortes.
+* `dias_despues_fechaPago` - momento de pago de los cliente en cada corte.
+* `dias_despues_fechaPago_prom_decay3` - promedios móviles del momento de pago histórico, ponderado con decaimiento geométrico y half-life de tres cortes.
+* `dias_despues_fechaPago_sd_decay` - desviaciones estándar de los momentos de pago históricos, ponderados con decaimiento geométrico y half-life de tres meses.
+* `porc_puntual` - porcentaje puntual del pago de los clientes en cada corte.
+* `porc_puntual_prom_decay` - promedios móviles (con decaimiento geométrico y half-life de tres meses) del porcentaje puntual de los pagos. 
+* `porc_puntual_sd_decay` - desviaciones estándar del porcentaje puntual de los pagos, ponderados con decaimiento geométrico y half-life de tres meses.
+* `porc_mora` - suma del porcentaje impuntual y de rescate en el pago de los clientes en cada corte.
+* `porc_mora_prom_decay3` - promedios móviles (con decaimiento geométrico y half-life de tres cortes) del porcentaje en mora de los pagos.
+* `porc_mora_sd_decay3` - desviaciones estándar del porcentaje en mora de los pagos, ponderados con decaimiento geométrico y half-life de tres cortes.
+* `dias_puntual_prop_decay` - proporción (con decaimiento geométrico y half-life de tres meses) de cortes con abonos puntuales.
+* `dias_puntual_sd_decay` - desviaciones estándar de la proporción de cortes con abonos puntuales, ponderados con decaimiento geométrico y half-life de tres mesesm
+* `dias_mora_prop_decay3` - proporción (con decaimiento geométrico y half-life de tres cortes) de cortes con abonos impuntuales o de rescate.
+* `dias_mora_sd_decay3` - desviaciones estándar de la proporción de cortes con abonos impuntuales o de rescate de los clientes, ponderados con decaimiento geométrico y half-life de tres cortes.
+
+En github \<ref\> se encuentra el código con el que se construyeron todas estas variables. 

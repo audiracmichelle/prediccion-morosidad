@@ -34,7 +34,7 @@ Los créditos que el Banco otorga a sus clientes son de tipo *revolvente*. A dif
 
 El Banco guarda la información transaccional de sus clientes y, de acuerdo a una evaluación hecha por un equipo de científicos de datos, cuenta con una **madurez de datos** suficiente para incorporar pipelines de aprendizaje de máquina a sus procesos. 
 
-## Problema a Resolver
+## Problema a Resolver{#problema}
 
 El Banco buscó a un equipo de científicos de datos para trabajar en un proyecto que consistiría en la creación de *indicadores de riesgo* de sus clientes. A continuación explicaremos la motivación detrás de la creación de dichos indicadores. Por confidencialidad, no se dan a conocer valores específicos del negocio. 
 
@@ -54,7 +54,7 @@ De acuerdo con el Banco, anteriormente se decidió disminuir los recursos destin
 
 La motivación detrás del proyecto es fortalecer la cobranza preventiva identificando los posibles evento de impago. Además, generar indicadores de riesgo permite crear controles para evitar que clientes en problemas intenten financiar su deuda con más deuda.
 
-## Solución Propuesta
+## Solución Propuesta{#propuesta}
 
 Los clientes pueden cubrir su monto a pagar en una sola exhibición o en varios abonos. La fecha en la que los abonos o movimientos cubren el monto a pagar la llamaremos *fecha de abono*. Dependiendo del momento en que ocurre la fecha de abono el Banco clasifica los pagos en tres:
 
@@ -95,7 +95,7 @@ creditos %>%
 
 De acuerdo con los científicos de datos, el indicador de impuntualidad debía ser el encargado de predecir si, en los siguientes tres cortes, el momento de pago de un cliente caería en la cola amarilla y roja del tríangulo de pagos. El Banco aceptó la propuesta.
 
-## Mecanismo de Validación
+## Mecanismo de Validación{#validacion}
 
 En la sección \<ref\> se detalla como se construyó la etiqueta de impuntualidad con la que se entrenaron modelos supervisados. Por ahora nos basta saber que se obtuvieron etiquetas para cada cliente y para cada corte en los datos históricos del Banco y con esto se obtuvo que el 90.3% de los casos históricos son negativos y el 9.7% positivos.
 
