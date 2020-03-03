@@ -107,4 +107,4 @@ A continuación listamos las veinte variables con las que se entrenó el Gradien
 * `dias_mora_prop_decay3` - proporción (con decaimiento geométrico y half-life de tres cortes) de cortes con abonos impuntuales o de rescate.
 * `dias_mora_sd_decay3` - desviaciones estándar de la proporción de cortes con abonos impuntuales o de rescate de los clientes, ponderados con decaimiento geométrico y half-life de tres cortes.
 
-En github \<ref\> se encuentra el código con el que se construyeron todas estas variables. 
+En el repositorio [https://github.com/audiracmichelle/prediccion-morosidad/](https://github.com/audiracmichelle/prediccion-morosidad/) se encuentra el pipeline con el que se construyen todas estas variables. 

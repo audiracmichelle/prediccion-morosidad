@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 5 Anexo | Historias de Crédito y Predicciones de Impuntualidad de Pago</title>
+  <meta name="description" content="En este documento se presenta un estudio de caso en el que se aplica ciencia de datos para analizar historias de crédito y generar predicciones de impuntualidad." />
+  <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 5 Anexo | Historias de Crédito y Predicciones de Impuntualidad de Pago" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="En este documento se presenta un estudio de caso en el que se aplica ciencia de datos para analizar historias de crédito y generar predicciones de impuntualidad." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 5 Anexo | Historias de Crédito y Predicciones de Impuntualidad de Pago" />
+  
+  <meta name="twitter:description" content="En este documento se presenta un estudio de caso en el que se aplica ciencia de datos para analizar historias de crédito y generar predicciones de impuntualidad." />
+  
+
+<meta name="author" content="Michelle Audirac" />
+
+
+<meta name="date" content="2020-02-25" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="conclusiones.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introducción</a></li>
+<li class="chapter" data-level="2" data-path="contexto.html"><a href="contexto.html"><i class="fa fa-check"></i><b>2</b> Contexto</a><ul>
+<li class="chapter" data-level="2.1" data-path="contexto.html"><a href="contexto.html#la-organización"><i class="fa fa-check"></i><b>2.1</b> La organización</a></li>
+<li class="chapter" data-level="2.2" data-path="contexto.html"><a href="contexto.html#problema"><i class="fa fa-check"></i><b>2.2</b> Problema a Resolver</a></li>
+<li class="chapter" data-level="2.3" data-path="contexto.html"><a href="contexto.html#propuesta"><i class="fa fa-check"></i><b>2.3</b> Solución Propuesta</a></li>
+<li class="chapter" data-level="2.4" data-path="contexto.html"><a href="contexto.html#validacion"><i class="fa fa-check"></i><b>2.4</b> Mecanismo de Validación</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="proyecto.html"><a href="proyecto.html"><i class="fa fa-check"></i><b>3</b> Proyecto</a><ul>
+<li class="chapter" data-level="3.1" data-path="proyecto.html"><a href="proyecto.html#historias-de-crédito"><i class="fa fa-check"></i><b>3.1</b> Historias de Crédito</a></li>
+<li class="chapter" data-level="3.2" data-path="proyecto.html"><a href="proyecto.html#limpieza"><i class="fa fa-check"></i><b>3.2</b> Limpieza de datos</a></li>
+<li class="chapter" data-level="3.3" data-path="proyecto.html"><a href="proyecto.html#feature-engineering"><i class="fa fa-check"></i><b>3.3</b> Feature Engineering</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="proyecto.html"><a href="proyecto.html#decaimiento-geométrico-y-promedios-móviles"><i class="fa fa-check"></i><b>3.3.1</b> Decaimiento Geométrico y Promedios Móviles</a></li>
+<li class="chapter" data-level="3.3.2" data-path="proyecto.html"><a href="proyecto.html#series-de-diferencias-y-desviación-estándar"><i class="fa fa-check"></i><b>3.3.2</b> Series de Diferencias y Desviación Estándar</a></li>
+<li class="chapter" data-level="3.3.3" data-path="proyecto.html"><a href="proyecto.html#etiquetas"><i class="fa fa-check"></i><b>3.3.3</b> Etiquetas</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="proyecto.html"><a href="proyecto.html#selección-de-modelos"><i class="fa fa-check"></i><b>3.4</b> Selección de Modelos</a></li>
+<li class="chapter" data-level="3.5" data-path="proyecto.html"><a href="proyecto.html#desempeno"><i class="fa fa-check"></i><b>3.5</b> Desempeño del Modelo</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="conclusiones.html"><a href="conclusiones.html"><i class="fa fa-check"></i><b>4</b> Conclusiones</a></li>
+<li class="chapter" data-level="5" data-path="anexo.html"><a href="anexo.html"><i class="fa fa-check"></i><b>5</b> Anexo</a><ul>
+<li class="chapter" data-level="5.1" data-path="anexo.html"><a href="anexo.html#decaimiento"><i class="fa fa-check"></i><b>5.1</b> Decaimento Geométrico</a></li>
+<li class="chapter" data-level="5.2" data-path="anexo.html"><a href="anexo.html#features"><i class="fa fa-check"></i><b>5.2</b> Lista de Variables</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Historias de Crédito y Predicciones de Impuntualidad de Pago</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="anexo" class="section level1">
+<h1><span class="header-section-number">Capítulo 5</span> Anexo</h1>
+<div id="decaimiento" class="section level2">
+<h2><span class="header-section-number">5.1</span> Decaimento Geométrico</h2>
+<p>Aquí presentaremos un método para obtener series diarias de pesos monotónicos decrecientes con un half-life de <span class="math inline">\(m\)</span> días. Esto significa que buscamos una serie <span class="math inline">\(w = (w^T, w^{T-1}, \dots, w^1)\)</span> de pesos diarios tal que <span class="math inline">\(w^t \geq w^{t-1}\)</span>, <span class="math inline">\(\sum w^t = 1\)</span> y que además se cumplan dos condiciones:</p>
+<ul>
+<li><span class="math inline">\(\sum^T_{k=m} w^k \leq 1/2\)</span></li>
+<li><span class="math inline">\(\sum^m_{k=1} w^k \leq 1/2\)</span></li>
+</ul>
+<p>Para esto <strong>nos basaremos en una distribución geométrica</strong> en donde <span class="math inline">\(X\)</span> que es el número de fracasos antes del primer éxito con soporte en <span class="math inline">\(\{1, 2, 3, \ldots\}\)</span>. Si <span class="math inline">\(X\sim\text{Geom}(p)\)</span> entonces <span class="math inline">\(\Pr[X = k] = p(1-p)^{k-1}\)</span> y la probabilidad acumulada hasta <span class="math inline">\(x\)</span> está dada por <span class="math inline">\(\sum^x_{k=1}\Pr[X=k]\)</span>. Usando la serie geométrica tenemos que</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sum^x_{k=1}\Pr[X=k] &amp; =
+\sum^x_{k=1}p(1-p)^{k-1} \\
+ &amp;= p\sum^{x-1}_{k=0}(1-p)^k \\
+ &amp;= p\frac{1-(1-p)^x}{1-(1-p)}=
+1-(1-p)^x
+\end{aligned}
+\]</span></p>
+<p>Dado un half-life <span class="math inline">\(m\)</span>, contruyamos una variable aleatoria <span class="math inline">\(Y\)</span> que tiene distribución geométrica truncada y cuya mediana es <span class="math inline">\(m\)</span>:</p>
+<ul>
+<li>Si <span class="math inline">\(Y\)</span> tiene una distribución geométrica truncada, entonces tiene soporte finito <span class="math inline">\(\{1, 2, 3, \ldots, T\}\)</span> y su función de probabilidad es <span class="math inline">\(\Pr[Y = k] = \Pr[X=k|X \leq T] = \frac{1}{C}\Pr[X=k]\)</span> donde <span class="math inline">\(C=\sum^T_{k=1}\Pr[X=k]\)</span>. Esto es</li>
+</ul>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[Y=k] &amp; = \Pr[X=k|X \leq T] \\
+&amp; = \frac{\Pr[X=k]}{\sum^T_{k=1}\Pr[X=k]} &amp; \\
+&amp; = \frac{p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}}  = 
+\frac{p(1-p)^{k-1}}{1-(1-p)^T}
+\end{aligned}
+\]</span></p>
+<ul>
+<li>Si la mediana de <span class="math inline">\(Y\)</span> es <span class="math inline">\(m\)</span>, entonces buscamos aquella <span class="math inline">\(p\)</span> que cumpla que <span class="math inline">\(\sum^m_{k=1}\Pr[Y=k] = 1/2\)</span>. Esto es</li>
+</ul>
+<p><span class="math display">\[
+\begin{aligned}
+\sum^m_{k=1}\Pr[Y=k] &amp; = \frac{1}{C}\sum^m_{k=1}\Pr[X=k] \\
+&amp; = \frac{\sum^m_{k=1}p(1-p)^{k-1}}{\sum^T_{k=1}p(1-p)^{k-1}} \\
+&amp; = \frac{\sum^{m-1}_{k=0}(1-p)^k}{\sum^{T-1}_{k=0}(1-p)^k} =
+\frac{1-(1-p)^m}{1-(1-p)^T}= 1/2
+\end{aligned}
+\]</span></p>
+<p>No existe una solución analítica para <span class="math inline">\(p\)</span>, pero podemos obtener soluciones numéricas; existirá una solución siempre y cuando <span class="math inline">\(m\in (0,T/2)\)</span>, con <span class="math inline">\(p \to 0\)</span> si <span class="math inline">\(m\to T/2\)</span> y <span class="math inline">\(p\to 1\)</span> si <span class="math inline">\(m\to 0\)</span>.</p>
+<p>Supongamos que tenemos <span class="math inline">\(T = 1000\)</span> y <span class="math inline">\(m = 45\)</span>, <strong>¿bajo qué <span class="math inline">\(p\)</span> la distribución de <span class="math inline">\(Y\)</span> acumula <span class="math inline">\(0.5\)</span> en <span class="math inline">\(m\)</span>?</strong> La solución es <span class="math inline">\(p=0.0153\)</span> como se muestra en la <a href="anexo.html#fig:pesos">5.1</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:pesos"></span>
+<img src="book_files/figure-html/pesos-1.png" alt="La solución p" width="50%" />
+<p class="caption">
+Figure 5.1: La solución p
+</p>
+</div>
+<p>Con esto, proponemos la serie de pesos <span class="math inline">\(w\)</span> tal que</p>
+<ul>
+<li><span class="math inline">\(w^T \rightarrow \Pr[Y = 1]\)</span></li>
+<li><span class="math inline">\(w^{T-1} \rightarrow \Pr[Y = 2]\)</span></li>
+<li><span class="math inline">\(\vdots\)</span></li>
+<li><span class="math inline">\(w^1 \rightarrow \Pr[Y = T]\)</span></li>
+</ul>
+<p>En la figura <a href="anexo.html#fig:geometricos">5.2</a> se muestra la serie de pesos con decaimento geométrico con <span class="math inline">\(T = 1000\)</span> y <span class="math inline">\(m = 45\)</span>. La línea vertical se encuentra sobre el half-life <span class="math inline">\(m\)</span> donde se acumula el 50% de los pesos.</p>
+<div class="figure" style="text-align: center"><span id="fig:geometricos"></span>
+<img src="book_files/figure-html/geometricos-1.png" alt="Ejemplo con T = 1000 y m = 45" width="50%" />
+<p class="caption">
+Figure 5.2: Ejemplo con T = 1000 y m = 45
+</p>
+</div>
+</div>
+<div id="features" class="section level2">
+<h2><span class="header-section-number">5.2</span> Lista de Variables</h2>
+<p>A continuación listamos las veinte variables con las que se entrenó el Gradient Boosting Classifier cuyas predicciones arrojaron el mejor desempeño.</p>
+<ul>
+<li><code>antiguedad</code> - antigüedad de los cliente en cada corte.</li>
+<li><code>saldoActual</code> - saldo de los cliente en cada corte.</li>
+<li><code>saldo_prom_decay3</code> - promedios móviles del saldo histórico, ponderados con decaimiento geométrico y half-life de tres cortes.</li>
+<li><code>saldo_sd_decay3</code> - desviaciones estándar de los saldos históricos, ponderados con decaimiento geométrico y half-life de tres cortes.</li>
+<li><code>diff_saldo</code> - diferencias entre el valor del saldo en una fecha de corte y el saldo en la fecha de corte anterior.</li>
+<li><code>diff_saldo_prom_decay3</code> - promedios móviles de las diferencias en el saldo, ponderados con decaimiento geométrico y half-life de tres cortes.</li>
+<li><code>diff_saldo_sd_decay3</code> - desviaciones estándar de las diferencias en el saldo, ponderados con decaimiento geométrico y half-life de tres cortes.</li>
+<li><code>dias_despues_fechaPago</code> - momento de pago de los cliente en cada corte.</li>
+<li><code>dias_despues_fechaPago_prom_decay3</code> - promedios móviles del momento de pago histórico, ponderado con decaimiento geométrico y half-life de tres cortes.</li>
+<li><code>dias_despues_fechaPago_sd_decay</code> - desviaciones estándar de los momentos de pago históricos, ponderados con decaimiento geométrico y half-life de tres meses.</li>
+<li><code>porc_puntual</code> - porcentaje puntual del pago de los clientes en cada corte.</li>
+<li><code>porc_puntual_prom_decay</code> - promedios móviles (con decaimiento geométrico y half-life de tres meses) del porcentaje puntual de los pagos.</li>
+<li><code>porc_puntual_sd_decay</code> - desviaciones estándar del porcentaje puntual de los pagos, ponderados con decaimiento geométrico y half-life de tres meses.</li>
+<li><code>porc_mora</code> - suma del porcentaje impuntual y de rescate en el pago de los clientes en cada corte.</li>
+<li><code>porc_mora_prom_decay3</code> - promedios móviles (con decaimiento geométrico y half-life de tres cortes) del porcentaje en mora de los pagos.</li>
+<li><code>porc_mora_sd_decay3</code> - desviaciones estándar del porcentaje en mora de los pagos, ponderados con decaimiento geométrico y half-life de tres cortes.</li>
+<li><code>dias_puntual_prop_decay</code> - proporción (con decaimiento geométrico y half-life de tres meses) de cortes con abonos puntuales.</li>
+<li><code>dias_puntual_sd_decay</code> - desviaciones estándar de la proporción de cortes con abonos puntuales, ponderados con decaimiento geométrico y half-life de tres mesesm</li>
+<li><code>dias_mora_prop_decay3</code> - proporción (con decaimiento geométrico y half-life de tres cortes) de cortes con abonos impuntuales o de rescate.</li>
+<li><code>dias_mora_sd_decay3</code> - desviaciones estándar de la proporción de cortes con abonos impuntuales o de rescate de los clientes, ponderados con decaimiento geométrico y half-life de tres cortes.</li>
+</ul>
+<p>En el repositorio <a href="https://github.com/audiracmichelle/prediccion-morosidad/">https://github.com/audiracmichelle/prediccion-morosidad/</a> se encuentra el pipeline con el que se construyen todas estas variables.</p>
+
+<div id="refs" class="references">
+<div>
+<p>Hastie, Trevor, Robert Tibshirani, and Jerome Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>. Springer Science &amp; Business Media.</p>
+</div>
+<div>
+<p>Raschka, Sebastian. 2018. “Model Evaluation, Model Selection, and Algorithm Selection in Machine Learning.” <em>arXiv:1811.12808v1 [cs.LG]</em>.</p>
+</div>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="conclusiones.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["book.pdf"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

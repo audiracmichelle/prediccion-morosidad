@@ -2,7 +2,7 @@
 
 <!-- Here is a review of existing methods. -->
 
-# Proyecto
+# Proyecto {#proyecto}
 
 ## Historias de Crédito
 
@@ -51,12 +51,16 @@ design_matrix %>%
   select(fechaPago, 
          saldoActual,
          minimoPagar) %>% 
-  rename(date = fechaPago) %>% 
+  rename(date = fechaPago) %>%  
   gather(key, value,-date) %>%
-  ggplot(aes(x = date, 
+  ggplot(aes(x = date,
              y = value,
              colour = key)) +
-    geom_line()
+  geom_line() +
+  xlab("") +
+  ylab("") +
+  scale_colour_discrete(name = "", labels = c("mínimo a pagar", "saldo")) + 
+  scale_y_continuous(labels = comma)
 ```
 
 Por un lado, tenemos que la *fecha de inicio* del crédito fue en enero 2015 y, durante ese año, el cliente fue aumentando su saldo de \$1,000 a \$100,000 pesos. Por otro lado, podemos ver que durante 2016 el cliente fue saldando su crédito hasta liquidarlo por completo en enero de 2017. 
@@ -138,7 +142,14 @@ plot1 <- creditos %>%
   ggplot(aes(x = date,
              y = value,
              colour = key)) + 
-  geom_line()
+  geom_line() +
+  xlab("") +
+  ylab("") +
+  scale_colour_discrete(name = "", labels = c("abonos impuntuales", 
+                                              "mínimo a pagar", 
+                                              "abonos puntuales",
+                                              "abonos en rescate")) + 
+  scale_y_continuous(labels = comma)
 
 plot2 <- creditos %>% 
   filter(pkcolocadora == colocadora_ej) %>%
@@ -151,7 +162,13 @@ plot2 <- creditos %>%
   ggplot(aes(x = date,
              y = value,
              colour = key)) + 
-  geom_line()
+  geom_line() +
+  xlab("") +
+  ylab("") +
+  scale_colour_discrete(name = "", labels = c("porcentaje impuntual",  
+                                              "porcentaje puntual",
+                                              "porcentaje en rescate")) + 
+  scale_y_continuous(labels = percent)
 
 grid.arrange(plot1, plot2, nrow=2)
 ```
@@ -206,7 +223,7 @@ En algunos casos, la secuencia en una historia de crédito tenía datos faltante
 
 La figura \@ref(fig:faltantes) muestra el histograma del número de estampas consecutivas faltantes en las historias de los clientes excluyendo el cero.
 
-```{r, faltantes, echo=FALSE, out.width="50%", fig.align="center", fig.pos="H", fig.cap="Histogramas de número de fechas faltantes consecutivas"}
+```{r, faltantes, echo=FALSE, out.width="40%", fig.align="center", fig.pos="H", fig.cap="Histograma de número de estampas faltantes consecutivas"}
 # limpieza %>% 
 #   filter(max_fechas_faltantes_seguidas > 0) %>% 
 #   ggplot(aes(x=max_fechas_faltantes_seguidas)) +
@@ -214,8 +231,11 @@ La figura \@ref(fig:faltantes) muestra el histograma del número de estampas con
 
 limpieza %>% 
   filter(max_fechas_faltantes_seguidas > 0) %>% 
-  pull(max_fechas_faltantes_seguidas) %>% 
-  hist()
+  ggplot(aes(x=max_fechas_faltantes_seguidas)) + 
+  geom_histogram(bins = 10, color="black", fill="white") + 
+  xlab("") +
+  ylab("conteo") + 
+  scale_y_continuous(labels = comma)
 ```
 
 
@@ -300,7 +320,13 @@ creditos %>%
   ggplot(aes(x = date,
              y = value,
              colour = key)) + 
-  geom_line()
+  geom_line() +
+  xlab("") +
+  ylab("") +
+  scale_colour_discrete(name = "", labels = c("saldo_prom_decay",  
+                                              "saldo_prom_decay3",
+                                              "saldo")) + 
+  scale_y_continuous(labels = comma)
 ```
 
 <!-- Por otro lado, transformamos con decaimiento geométrico las series de porcentaje puntual, impuntual y rescate de los clientes con lo que generamos otras tres variables: `porc_puntual_decay`, `porc_impuntual_decay`, y `porc_rescate_decay`.  -->
@@ -359,7 +385,14 @@ creditos %>%
   ggplot(aes(x = date,
              y = value,
              colour = key)) + 
-  geom_line()
+  geom_line()  +
+  xlab("") +
+  ylab("") + 
+  scale_y_continuous(labels = comma) +
+  scale_colour_discrete(name = "", labels = c("diff_saldo", 
+                                              "diff_saldo_sd_decay3",  
+                                              "saldo_prom_decay3",
+                                              "saldo"))
 ```
 
 La siguiente lista muestra algunos ejemplos de las variables que se utilizaron en la selección de modelos:
@@ -485,7 +518,7 @@ Con esto, ejemplificamos el proceso de selección de modelos que realizaron los 
 
 En la Sección \@ref(validacion) sobre métricas de validación, establecimos que para aprobar un modelo, este debía alcanzar un recall de 50% y una especificidad de 93%. A continuación mostramos las métricas de desempeño del modelo puesto en producción.
 
-Ya mencionamos que el modelo elegido fue un Gradient Boosting Classifier. Este tipo de algoritmos no requieren que se haga una selección de variables muy extensiva \<bib\>, y se entrenó con el conjunto de variables que presentamos en el Anexo \@ref(features). La selección de hiperparámetros consistió basicamente en elegir la profundidad de los árboles con un grid. El número de árboles quedó determinado por el early stopping que está incorporado al algoritmo utilizado.
+Ya mencionamos que el modelo elegido fue un Gradient Boosting Classifier. Este tipo de algoritmos son robustos ante la inclusión de variables de ruido [@hastie] y se entrenó con el conjunto de variables que presentamos en el Anexo \@ref(features). La selección de hiperparámetros consistió basicamente en elegir la profundidad de los árboles con un grid. El número de árboles quedó determinado por el early stopping que está incorporado al algoritmo utilizado.
 
 A continuación mostramos las medidas desempeño del modelo que se obtienen con el corte (threshold) elegido. Por corte nos referimos al valor a partir del cual se le asigna a una predicción el valor de uno o cero.  
 
@@ -537,7 +570,7 @@ Si hacemos lo mismo con el recall, el intervalo resultante va del 37% al 59%. Co
 knitr::include_graphics("./images/t_student.png")
 ```
 
-No hay que perder de vista que estos rangos de valores no son los intervalos de confianza de las medias de dichas distribuciones y que los intervalos de confianza nos permiten conocer el valor esperado de las métricas de desempeño de todas las predicciones futuras agregadas. Al contruir un intervalo de confianza para la media de la precisión tenemos que este se encuentra entre 65% y 68%; y para la media del recall entre 44% y 51%.
+No hay que perder de vista que estos rangos de valores no son los intervalos de confianza de las medias de dichas distribuciones y que los intervalos de confianza nos permiten conocer el valor esperado de las métricas de desempeño de todas las predicciones futuras agregadas [@raschka]. Al contruir un intervalo de confianza para la media de la precisión tenemos que este se encuentra entre 65% y 68%; y para la media del recall entre 44% y 51%.
 
 Por último, platicaremos un resultado interesante derivado de un proyecto relacionado en el que el Banco les pidió a los científicos de datos predecir qué clientes dejarían de pagar y caerían en mora definitiva. Como punto de referencia, recordemos que en este trabajo describimos cómo se obtuvieron series de diferencias y de desviaciones estándard y que al evaluar la importancia de esas variables, en realidad no tenían mucho poder predictivo. 
 

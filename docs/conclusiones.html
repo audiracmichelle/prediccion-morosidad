@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Historias de Crédito y Predicciones de Impuntualidad de Pago</title>
+  <title>Capítulo 4 Conclusiones | Historias de Crédito y Predicciones de Impuntualidad de Pago</title>
   <meta name="description" content="En este documento se presenta un estudio de caso en el que se aplica ciencia de datos para analizar historias de crédito y generar predicciones de impuntualidad." />
   <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Historias de Crédito y Predicciones de Impuntualidad de Pago" />
+  <meta property="og:title" content="Capítulo 4 Conclusiones | Historias de Crédito y Predicciones de Impuntualidad de Pago" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Historias de Crédito y Predicciones de Impuntualidad de Pago" />
+  <meta name="twitter:title" content="Capítulo 4 Conclusiones | Historias de Crédito y Predicciones de Impuntualidad de Pago" />
   
   <meta name="twitter:description" content="En este documento se presenta un estudio de caso en el que se aplica ciencia de datos para analizar historias de crédito y generar predicciones de impuntualidad." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="contexto.html"/>
+<link rel="prev" href="proyecto.html"/>
+<link rel="next" href="anexo.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -112,50 +112,41 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Historias de Crédito y Predicciones de Impuntualidad de Pago</h1>
-<p class="author"><em>Michelle Audirac</em></p>
-<p class="date"><em>2020-02-25</em></p>
+<div id="conclusiones" class="section level1">
+<h1><span class="header-section-number">Capítulo 4</span> Conclusiones</h1>
+<p>En las conclusiones exploraremos algunas ideas finales sobre las pruebas que podrían realizarse una vez puesto el modelo en producción. También hablaremos sobre un resultado interesante de otro proyecto que extiende el alcance del trabajo que presentamos aquí.</p>
+<p>Una vez que se ha puesto en producción un modelo y al empezarse a generar nuevas predicciones, un cuestionamiento válido consiste en entender si el modelo se desempeña como se esperaba. En la sección <a href="proyecto.html#desempeno">3.5</a> se presentaron métricas de desempeño puntuales; sin embargo, en otros datos las métricas serán distintas. ¿Cómo pueden compararse las métricas de desempeño sobre las nuevas predicciones con los valores puntuales que mostramos originalmente?</p>
+<p>Quizá aquí vale la pena sugerir que cuando un modelo va a ponerse en producción tiene sentido obtener el valor esperado de las métricas de desempeño y rangos de posibles valores. Con esto, las contrapartes pueden facilmente validar si el modelo en producción se sigue desempeñando de la misma manera que originalmente se planteó.</p>
+<p>¿Cómo producir rangos de valores válidos para las métricas de desempeño? Hacer distribuciones de referencia con bootstrapping es una opción, aunque el problema que se enfrenta aquí es que el conjunto de prueba es finito y su tamaño afecta de forma directa el tamaño del conjunto de entrenamiento; además recordemos que estamos tratando con series de tiempo y el supuesto de independencia no se cumple. Por esto vamos a recurrir a distribuciones paramétricas.</p>
+<p>Dividimos el conjunto de prueba en diez subconjuntos, validamos que el tamaño de los subconjuntos sea aceptable y obtenemos la precisión en cada uno. Con esto obtenemos diez valores distintos de precisión, como son pocas observaciones, ajustamos una t-student a la transformación logit de los datos. Finalmente, calculamos el percentil 5% y 95% para acumular el 90% de la distribución.Así, el rango de posibles valores de precisión de nuestro modelo se encuentra entre 61% y 72%.</p>
+<p>Si hacemos lo mismo con el recall, el intervalo resultante va del 37% al 59%. Como vemos, la métrica de recall tiene más varianza que la de precisión y esto es información muy valiosa. En la figura <a href="conclusiones.html#fig:t-student">4.1</a> incluimos la distribución empírica y la teórica que se ajustó.</p>
+<div class="figure" style="text-align: center"><span id="fig:t-student"></span>
+<img src="images/t_student.png" alt="Curvas roc de tres algoritmos" width="50%" />
+<p class="caption">
+Figure 4.1: Curvas roc de tres algoritmos
+</p>
 </div>
-<div id="introducción" class="section level1">
-<h1><span class="header-section-number">Capítulo 1</span> Introducción</h1>
-<p>Este estudio de caso describe un proyecto en el que un equipo de científicos de datos ayudó a una institución otorgadora de crédito a identificar cuándo sus clientes harían pagos impuntuales. En el Capítulo <a href="contexto.html#contexto">2</a> se describe con detalle la motivación y el problema a resolver.</p>
-<p>El entregable del proyecto fue un pipeline de datos que cada quincena actualiza los últimos movimientos en los créditos y genera predicciones de impuntualidad. Con esto en mente, el plan de trabajo que los científicos de datos siguieron fue:</p>
-<ol style="list-style-type: decimal">
-<li><p><strong>EDA</strong> se dio sentido a los datos transaccionales para que reflejaran historias de crédito. La limpieza de datos fue extensiva y se incorporó al pipeline una tarea que identifica, limpia y lista errores cada vez que se actualizan los datos.</p></li>
-<li><p><strong>Feature engineering</strong> se transformaron todas las variables explicativas para que capturaran el comportamiento pasado de los acreditados usando promedios móviles con decaimiento exponencial.</p></li>
-<li><p><strong>Model selection</strong> se probaron distintos algoritmos de clasificación y se determinaron los mejores hiperparámetros.</p></li>
-<li><p><strong>Code refactoring</strong> se factorizó el código y se crearon contenedores para cada una de las tareas del pipeline.</p></li>
-</ol>
-<p>Además, se trabajó con ingenieros de datos que estuvieron encargados del <strong>ETL</strong> y del <strong>pipeline testing</strong>. Para el ETL se desarrollaron los procesos de extracción de datos que alimentan al resto de las tareas. Durante el pipeline testing se validaron los resultados que produce el pipeline y se probó el funcionamiento de la entrega.</p>
-<p>En el Capítulo <a href="contexto.html#contexto">2</a> se describen las etapas 1 a 3 de este plan de trabajo y en el repositorio <a href="https://github.com/audiracmichelle/prediccion-morosidad/">https://github.com/audiracmichelle/prediccion-morosidad/</a> se encuentra el código factorizado que se produjo en la etapa 4.</p>
-<p>Una vez que se completaron las etapas del plan de trabajo, los científicos de datos dieron seguimiento al modelo puesto en producción. El Capítulo <a href="conclusiones.html#conclusiones">4</a> cubre qué se utilizó para validar que el desempeño cumplía con lo esperado.</p>
-<!-- ## Contacto -->
-<!-- Liliana Millán | liliana.millan\@gmail.com | líder del equipo de científicos de datos que trabajó en el proyecto -->
+<p>No hay que perder de vista que estos rangos de valores no son los intervalos de confianza de las medias de dichas distribuciones y que los intervalos de confianza nos permiten conocer el valor esperado de las métricas de desempeño de todas las predicciones futuras agregadas <span class="citation">(Raschka <a href="#ref-raschka">2018</a>)</span>. Al contruir un intervalo de confianza para la media de la precisión tenemos que este se encuentra entre 65% y 68%; y para la media del recall entre 44% y 51%.</p>
+<p>Por último, platicaremos un resultado interesante derivado de un proyecto relacionado en el que el Banco les pidió a los científicos de datos predecir qué clientes dejarían de pagar y caerían en mora definitiva. Como punto de referencia, recordemos que en este trabajo describimos cómo se obtuvieron series de diferencias y de desviaciones estándard y que al evaluar la importancia de esas variables, en realidad no tenían mucho poder predictivo.</p>
+<p>Al poner las manos a la obra, los científicos de datos usaron las mismas variables que ya presentamos para entrenar otro Gradient Boosting Classifier con las etiquetas de impago definitivo. Fue una sorpresa ver que el modelo alcanzara casi el mismo desempeño para los impagos que para los pagos impuntuales. Al ver más de cerca, la importancia de las variables era distinta y para ese problema, las variables que incorporan diferencias y desviaciones estándar, tenían más importancia.
+<!-- segunda iteración de este proyecto se predijo el impago definitivo. El modelo resultante le da más peso a la desviación estándar y las diferencias.  --></p>
 
-<!-- # Introduction {#intro} -->
-<!-- You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods). -->
-<!-- Figures and tables with captions will be placed in `figure` and `table` environments, respectively. -->
-<!-- ```{r nice-fig, fig.cap='Here is a nice figure!', out.width='80%', fig.asp=.75, fig.align='center'} -->
-<!-- par(mar = c(4, 4, .1, .1)) -->
-<!-- plot(pressure, type = 'b', pch = 19) -->
-<!-- ``` -->
-<!-- Reference a figure by its code chunk label with the `fig:` prefix, e.g., see Figure \@ref(fig:nice-fig). Similarly, you can reference tables generated from `knitr::kable()`, e.g., see Table \@ref(tab:nice-tab). -->
-<!-- ```{r nice-tab, tidy=FALSE} -->
-<!-- knitr::kable( -->
-<!--   head(iris, 20), caption = 'Here is a nice table!', -->
-<!--   booktabs = TRUE -->
-<!-- ) -->
-<!-- ``` -->
-<!-- You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015]. -->
+<!-- # Methods -->
+<!-- We describe our methods in this chapter. -->
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-raschka">
+<p>Raschka, Sebastian. 2018. “Model Evaluation, Model Selection, and Algorithm Selection in Machine Learning.” <em>arXiv:1811.12808v1 [cs.LG]</em>.</p>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="contexto.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="proyecto.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="anexo.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -20,7 +20,7 @@
 
 <!-- You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015]. -->
 
-# Contexto 
+# Contexto {#contexto}
 
 ## La organización
 
@@ -118,24 +118,3 @@ Para las métricas de desempeño teóricas del muestreo aleatorio tenemos un acc
 |                | negativo |   90.3%      |    90.3%    |
 
 Al contar con estos valores de referencia se estableció que para ponerse en producción el indicador de impuntualidad, este debía alcanzar al menos un nivel de recall de 50% y de especificidad de 93%. El accuracy correspondiente a estos valores de recall y especificidad es de 88.55% (0.93 \* 0.9 + 0.097 \* 0.5).
-
-## Plan de Trabajo
-
-El entregable del proyecto consistía en un pipeline de datos para actualizar cada quincena los últimos movimientos de los clientes y producir predicciones. Con esto en mente, el plan de trabajo que los científicos de datos siguieron fue: 
-
-1. **EDA** se dio sentido a los datos transaccionales para que reflejaran las historias de crédito de los clientes. Para esto, se trabajó con los dueños de los datos del Banco. La limpieza de datos fue extensiva y se incorporó al pipeline una tarea que identifica, limpia y lista errores cada vez que se actualizan los datos.
-
-2. **Feature engineering** se transformaron todas las variables explicativas para que capturaran el comportamiento pasado de los acreditados usando *promedios móviles con decaimiento exponencial*.
-
-3. **Model selection** se probaron distintos algoritmos de clasificación y se determinaron los mejores hiperparámetrosl.
-
-4. **Code refactoring** se factorizó el código y se crearon contenedores para cada una de las tareas del pipeline.
-
-Además, se trabajó con ingenieros de datos que estuvieron encargados del **ETL** y del **pipeline testing**. Para el ETL se desarrollaron los procesos de extracción de datos que alimentan al resto de las tareas. Durante el pipeline testing se validaron los resultados que produce el pipeline y se probó con el Banco el funcionamiento de la entrega.
-
-En el siguiente capítulo describiremos las etapas 1 a 3 de este plan de trabajo. Cabe mencionar que el plan de trabajo de este proyecto también contempla etapas que no se cubren en este documento. En esas etapas se dió seguimiento al efecto de las acciones de cobranza preventiva que el Banco implementó a partir de los indicadores de riesgo que se desarrollaron. 
-
-## Contacto
-
-Liliana Millán | liliana.millan\@gmail.com | líder del equipo de científicos de datos que trabajó en el proyecto
-
